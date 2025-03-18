@@ -1,0 +1,67 @@
+# Fichier .gitignore global pour le projet Presteo
+# Les fichiers .gitignore spécifiques sont dans les dossiers /Back et /Front
+
+### Fichiers système ###
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+### IDE & Éditeurs ###
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+### Logs et fichiers temporaires ###
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+*.tmp
+*.temp
+.temp/
+logs/
+
+### Fichiers d'environnement ###
+.env
+.env.*
+!.env.example
+
+### Cache et dépendances ###
+node_modules/
+.npm/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+### Rapports de couverture et tests ###
+coverage/
+.coverage/
+.nyc_output/
+junit.xml
+
+### Documentation générée ###
+docs/generated/
+
+### Fichiers spécifiques au projet ###
+.presteo-secrets
