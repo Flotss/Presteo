@@ -1,10 +1,17 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Test Page</h1>
-    <p class="mb-4">Counter: {{ counter }}</p>
-    <button @click="incrementCounter" class="bg-blue-500 text-white px-4 py-2 rounded">Increment</button>
+  <div>
+    <div class="p-4">
+      <h1 class="text-2xl font-bold mb-4">Test Page</h1>
+      <p class="mb-4">Counter: {{ counter }}</p>
+      <button @click="incrementCounter" class="bg-blue-500 text-white px-4 py-2 rounded">Increment</button>
+    </div>
+    <div v-if="error" class="text-red-500 mt-4">
+      <p>Error: {{ error.message }}</p>
+    </div>
+    <div v-if="loading" class="text-blue-500 mt-4">
+      <p>Loading...</p>
+    </div>
   </div>
-
 </template>
 
 <script setup>
