@@ -8,6 +8,14 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
   ],
+
+  css: [
+    '@fortawesome/fontawesome-svg-core/styles.css',
+  ],
+
+  plugins: [
+    { src: '../plugins/fontawesome.ts' },
+  ],
   
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
