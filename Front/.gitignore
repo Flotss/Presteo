@@ -40,3 +40,9 @@ lerna-debug.log*
 *.tmp
 *.swp
 .temp/
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
