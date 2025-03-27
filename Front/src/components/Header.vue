@@ -3,11 +3,11 @@
     id="header"
     class="w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100"
   >
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 shadow-inner border-b border-gray-100">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center">
           <span class="text-2xl font-bold text-blue-600 cursor-pointer">
-            Presteo
+            <NuxtLink to="/">Presteo</NuxtLink>
           </span>
         </div>
         <div class="hidden md:flex justify-evenly items-center w-full">
@@ -22,7 +22,9 @@
           </nav>
         </div>
         <div class="hidden md:flex items-center space-x-4 text-nowrap">
-          <button class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150">
+          <button
+            class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
+          >
             Login
           </button>
           <button
@@ -54,38 +56,48 @@
           </button>
         </div>
       </div>
-      <div v-if="isMenuOpen" class="md:hidden mt-4 space-y-2">
-        <span
-          v-for="route in routes"
-          :key="route.name"
-          class="block text-gray-600 hover:text-blue-600 transition-all duration-150"
+      <Transition
+        name="menu"
+        enter-active-class="animate-open-menu"
+        leave-active-class="animate-close-menu"
+      >
+        <div
+          v-if="isMenuOpen"
+          class="md:hidden mt-4 space-y-2 overflow-hidden hamburger-menu pb-2"
         >
-          <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
-        </span>
-        <button
-          class="block bg-gray-200 text-gray-600 px-6 py-2 rounded-full hover:text-blue-600 w-full text-center transition duration-150"
-        >
-          Login
-        </button>
-        <button
-          class="block bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 w-full text-center transition duration-150"
-        >
-          Sign Up
-        </button>
-      </div>
+          <span
+            v-for="(route, index) in routes"
+            :key="route.name"
+            class="block text-gray-600 text-center hover:text-blue-600 transition duration-150 openAnimation"
+            :style="{ animationDelay: `${index * 0.1}s` }"
+          >
+            <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
+            <div class="w-full h-0.5 bg-gray-200 my-2"></div>
+          </span>
+          <div class="flex justify-evenly space-x-4">
+            <button
+              class="bg-gray-200 text-gray-600 px-6 py-2 rounded-full hover:text-blue-600 w-full text-center transition duration-150 openAnimation opacity-0"
+              :style="{ animationDelay: `${routes.length * 0.1}s`, animationFillMode: 'forwards' }"
+            >
+              Login
+            </button>
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 w-full text-center transition duration-150 openAnimation opacity-0"
+              :style="{ animationDelay: `${routes.length * 0.1 + 0.1}s`, animationFillMode: 'forwards' }"
+            >
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </Transition>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
 const isMenuOpen = ref(false);
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
-};
-const closeMenu = () => {
-  isMenuOpen.value = false;
 };
 
 const routes = [
@@ -95,3 +107,50 @@ const routes = [
   { name: "About Us", path: "/about-us" },
 ];
 </script>
+
+<style scoped>
+.openAnimation {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.hamburger-menu {
+  overflow: hidden;
+}
+
+.animate-open-menu {
+  animation: wrapIn 0.4s ease-in-out;
+}
+
+.animate-close-menu {
+  animation: wrapOut 0.4s ease-in-out;
+}
+
+@keyframes wrapIn {
+  from {
+    max-height: 0;
+  }
+  to {
+    max-height: 500px;
+  }
+}
+
+@keyframes wrapOut {
+  from {
+    max-height: 500px;
+  }
+  to {
+    max-height: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+</style>

@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@nuxt/eslint'
   ],
 
   css: [
@@ -43,6 +44,6 @@ export default defineNuxtConfig({
   },
   
   typescript: {
-    strict: true
+    strict: true,
   }
 })
