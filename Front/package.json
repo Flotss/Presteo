@@ -17,6 +17,7 @@
     "@nuxt/eslint": "1.2.0",
     "@nuxt/icon": "1.11.0",
     "@nuxt/image": "1.9.0",
+    "@nuxtjs/tailwindcss": "^6.13.2",
     "@pinia/nuxt": "^0.10.1",
     "eslint": "^9.0.0",
     "nuxt": "^3.16.0",
@@ -32,8 +33,5 @@
       "sharp",
       "vue-demi"
     ]
-  },
-  "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.13.2"
   }
 }

@@ -73,18 +73,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
-const navigateToAbout = () => {
-  router.push('/about');
-};
-
-const navigateToProviders = () => {
-  router.push('/providers');
-};
-
 interface TerimonialCustomer {
   Name: string;
   stars: number;
@@ -98,13 +86,18 @@ const customers: TerimonialCustomer[] = [
   },
   {
     Name: 'Michael Chen',
-    stars: 5,
+    stars: 4,
     message: 'The tracking feature is fantastic! I always know when my service provider will arrive. Payment process is smooth and secure.',
   },
   {
     Name: 'Emma Davis',
     stars: 5,
     message: 'Regular cleaning service bookings made easy. The review system helps maintain high service quality. Perfect for busy professionals!',
-  },
+    },
+    {
+        Name: 'Liam Brown',
+        stars: 3,
+        message: 'The platform is convenient, but I faced some delays with the service provider. Overall, a decent experience.',
+    }
 ];
 </script>
