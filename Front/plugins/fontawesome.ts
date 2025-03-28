@@ -1,10 +1,11 @@
 import { library, config } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faGithub, faLinkedin, faTwitter, faFacebook } from '@fortawesome/free-brands-svg-icons'
-import { faCalendarCheck, faLocationDot, faStar } from '@fortawesome/free-solid-svg-icons'
+import { faGithub, faLinkedin, faTwitter, faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { faCalendarCheck, faCheckCircle, faLocationDot, faStar, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faCalendarCheck, faStar, faLocationDot)
-library.add(faGithub, faLinkedin, faTwitter, faFacebook)
+library.add(faGithub, faLinkedin, faTwitter, faFacebook, faGoogle)
+library.add(faCheckCircle, faTimesCircle)
 
 
 export default defineNuxtPlugin((nuxtApp) => {
