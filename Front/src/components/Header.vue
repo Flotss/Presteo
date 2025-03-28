@@ -22,16 +22,16 @@
           </nav>
         </div>
         <div class="hidden md:flex items-center space-x-4 text-nowrap">
-          <button
-            class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
+          <NuxtLink
+            to="/login" class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
           >
             Login
-          </button>
-          <button
-            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition duration-150"
+          </NuxtLink>
+          <NuxtLink
+            to="/signup" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition duration-150"
           >
             Sign Up
-          </button>
+          </NuxtLink>
         </div>
 
         <div class="flex items-center space-x-4">
