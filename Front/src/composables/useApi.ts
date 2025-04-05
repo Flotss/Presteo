@@ -33,9 +33,9 @@ export function useApi<T>(endpoint: string) {
     } else {
       throw new Error(`Unsupported content type: ${contentType}`);
     }
-  }
+  };
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<any> => {
     loading.value = true;
     error.value = null;
 
@@ -50,6 +50,8 @@ export function useApi<T>(endpoint: string) {
       }
       data.value = await parseResponse(response);
       envLogger.log(`Data successfully fetched from ${endpoint}`, data.value);
+
+      return data.value;
     } catch (err: any) {
       error.value = err.message || "Une erreur est survenue";
       data.value = null;
@@ -59,7 +61,7 @@ export function useApi<T>(endpoint: string) {
     }
   };
 
-  const postData = async (payload: any) => {
+  const postData = async (payload: any): Promise<any> => {
     loading.value = true;
     error.value = null;
 
@@ -88,7 +90,7 @@ export function useApi<T>(endpoint: string) {
     }
   };
 
-  const putData = async (id: string | number, payload: any) => {
+  const putData = async (id: string | number, payload: any): Promise<any> => {
     loading.value = true;
     error.value = null;
 
@@ -119,7 +121,7 @@ export function useApi<T>(endpoint: string) {
     }
   };
 
-  const deleteData = async (id: string | number) => {
+  const deleteData = async (id: string | number): Promise<any> => {
     loading.value = true;
     error.value = null;
 

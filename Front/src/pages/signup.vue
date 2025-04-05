@@ -6,16 +6,7 @@
       class="container border rounded-lg shadow-lg bg-white p-8 max-w-md sm:max-w-lg lg:max-w-xl mx-auto my-4"
     >
       <h1 class="text-3xl font-bold text-center mb-6">Sign Up</h1>
-      <p
-        v-if="signUpMessage.message"
-        class="text-sm text-center mb-4"
-        :class="{
-          'text-red-500': !signUpMessage.isSuccess,
-          'text-green-500': signUpMessage.isSuccess,
-        }"
-      >
-        {{ signUpMessage.message }}
-      </p>
+
       <form @submit.prevent="handleSignUp" novalidate>
         <div class="flex flex-col sm:flex-row sm:space-x-4">
           <FormInput
@@ -102,18 +93,40 @@
           :placeholder="'Re-enter your password'"
         />
         <button
-          :disabled="loading"
           type="submit"
           class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition duration-150"
+          :class="{
+            'bg-green-400': signUpMessage.isSuccess && !loading,
+            'bg-blue-600': allInputRequired && !signUpMessage.isSuccess,
+            'bg-gray-400': !allInputRequired && !signUpMessage.isSuccess,
+          }"
+          :disabled="loading"
         >
-          <div v-if="loading" class="flex items-center justify-center">
-            <font-awesome-icon icon="spinner" class="animate-spin mr-2" />
-            Loading...
-          </div>
-
-          Sign Up
+          <span v-if="loading" class="flex justify-center items-center">
+            <font-awesome-icon
+              :icon="['fas', 'circle-notch']"
+              class="animate-spin"
+            />
+          </span>
+          <span
+            v-else-if="signUpMessage.isSuccess"
+            class="flex justify-center items-center"
+          >
+            <font-awesome-icon :icon="['fas', 'check']" class="text-black" />
+          </span>
+          <span v-else> Sign Up </span>
         </button>
-        <div class="flex items-center justify-center mt-4">
+        <p
+          v-if="signUpMessage.message"
+          class="text-sm text-center mb-4"
+          :class="{
+            'text-red-500': !signUpMessage.isSuccess,
+            'text-green-500': signUpMessage.isSuccess,
+          }"
+        >
+          {{ signUpMessage.message }}
+        </p>
+        <div v-else class="flex items-center justify-center mt-4">
           <span class="text-gray-500">or</span>
           <button
             type="button"
@@ -138,16 +151,18 @@
 </template>
 <script lang="ts" setup>
 const submit = ref(false);
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
-const username = ref("");
-const firstName = ref("");
-const lastName = ref("");
-const address = ref("");
-const gender = ref("");
-const birthDate = ref("");
-const phoneNumber = ref("");
+const email = ref("test@example.com");
+const password = ref("Test@1234");
+const confirmPassword = ref("Test@1234");
+const username = ref("testuser");
+const firstName = ref("John");
+const lastName = ref("Doe");
+const address = ref(
+  "123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main S"
+);
+const gender = ref("male");
+const birthDate = ref("1990-01-01");
+const phoneNumber = ref("1234567890");
 
 const signUpMessage = ref({
   message: "",
@@ -191,18 +206,13 @@ const handleSignUp = () => {
   if (!allInputRequired.value) {
     return;
   }
-  // Handle sign up logic here
-  console.log("Signing up with:", email.value, password.value);
+
   sendSignUp();
-  signUpMessage.value.message = email.value + " | " + password.value;
-  signUpMessage.value.isSuccess = true;
-  console.log("Sign Up Message:", signUpMessage.value);
 };
 
-const { data: lol, loading, error, postData } = useApi("auth/signup");
+const { loading, postData } = useApi("auth/signup");
 
 const sendSignUp = async () => {
-  console.log("Sending sign up data for:", email.value);
   const response = await postData({
     email: email.value,
     password: password.value,
@@ -214,12 +224,21 @@ const sendSignUp = async () => {
     birthDate: birthDate.value,
     phoneNumber: phoneNumber.value,
   });
-  if (response.isSuccess) {
-    console.log("Sign up successful:", response.data);
+  if (response == 'User registered successfully!') {
     signUpMessage.value.message = "Sign up successful!";
     signUpMessage.value.isSuccess = true;
+
+    setTimeout(() => {
+      signUpMessage.value.message = "Redirecting in 1 second...";
+    }, 1000);
+
+    setTimeout(() => {
+      const router = useRouter();
+      router.push("/login");
+    }, 2000);
   } else {
-    signUpMessage.value.message = "Sign up failed: " + response.message;
+    console.error("Sign up failed:", response);
+    signUpMessage.value.message = "Sign up failed, please try again.";
     signUpMessage.value.isSuccess = false;
   }
 };

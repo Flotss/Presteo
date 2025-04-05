@@ -42,7 +42,7 @@ public class User {
     private String firstName;
 
     @NotBlank(message = "Address is required")
-    @Size(min = 3, max = 100, message = "Address must be between 3 and 100 characters")
+    @Size(min = 3, message = "Address must be at least 3 characters")
     @NotNull
     private String address;
 

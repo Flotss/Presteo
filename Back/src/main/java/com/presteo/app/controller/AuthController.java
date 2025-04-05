@@ -7,6 +7,7 @@ import com.presteo.app.security.JwtUtil;
 import com.presteo.app.security.model.AuthenticationRequest;
 import com.presteo.app.security.model.CustomUserDetails;
 import com.presteo.app.service.UserService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,12 +56,11 @@ public class AuthController {
         return "Authentication successful !";
     }
 
-
     @PostMapping("/signup")
     public String registerUser(@RequestBody User user) {
         user.setUsername(user.getUsername().toLowerCase());
         if (userRepository.existsByUsername(user.getUsername())) {
-            return "Error: Username is already taken!";
+            throw new EntityExistsException("Username is already taken!");
         }
 
         userService.createUser(user, RoleType.CUSTOMER.name());

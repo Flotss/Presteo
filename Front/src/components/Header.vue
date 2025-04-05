@@ -1,8 +1,5 @@
 <template>
-  <header
-    id="header"
-    class="w-full bg-white/95 backdrop-blur-sm z-50"
-  >
+  <header id="header" class="w-full bg-white/95 backdrop-blur-sm z-50">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center">
@@ -22,16 +19,17 @@
           </nav>
         </div>
         <div class="hidden md:flex items-center space-x-4 text-nowrap">
+          <UserProfileLink :should-have-menu="true" />
           <NuxtLink
-            v-if="!isLoginPage"
-            to="/login" 
+            v-if="!isLoginPage && !authStore.isLoggedIn"
+            to="/login"
             class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
           >
             Login
           </NuxtLink>
           <NuxtLink
-            v-if="!isSignUpPage"
-            to="/signup" 
+            v-if="!isSignUpPage && !authStore.isLoggedIn"
+            to="/signup"
             class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition duration-150"
           >
             Sign Up
@@ -79,20 +77,44 @@
             <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
             <div class="w-full h-0.5 bg-gray-200 my-2"></div>
           </span>
-          <div class="flex justify-evenly space-x-4">
-            <button
+          <div
+            v-if="!authStore.isLoggedIn"
+            class="flex justify-evenly space-x-4"
+          >
+            <NuxtLink
               v-if="!isLoginPage"
+              to="/login"
               class="bg-gray-200 text-gray-600 px-6 py-2 rounded-full hover:text-blue-600 w-full text-center transition duration-150 openAnimation opacity-0"
-              :style="{ animationDelay: `${routes.length * 0.1}s`, animationFillMode: 'forwards' }"
+              :style="{
+                animationDelay: `${routes.length * 0.1}s`,
+                animationFillMode: 'forwards',
+              }"
             >
-              <NuxtLink to="/login">Login</NuxtLink>
-            </button>
-            <button
+              Login
+            </NuxtLink>
+            <NuxtLink
               v-if="!isSignUpPage"
+              to="/signup"
               class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 w-full text-center transition duration-150 openAnimation opacity-0"
-              :style="{ animationDelay: `${routes.length * 0.1 + 0.1}s`, animationFillMode: 'forwards' }"
+              :style="{
+                animationDelay: `${routes.length * 0.1 + 0.1}s`,
+                animationFillMode: 'forwards',
+              }"
             >
-              <NuxtLink to="/signup">Sign Up</NuxtLink>
+              Sign Up
+            </NuxtLink>
+          </div>
+          <div v-else class="flex justify-between items-center space-x-40 mt-4">
+            <UserProfileLink />
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-center transition duration-150 openAnimation opacity-0"
+              :style="{
+                animationDelay: `${routes.length * 0.1 + 0.1}s`,
+                animationFillMode: 'forwards',
+              }"
+              @click="authStore.logout()"
+            >
+              Logout
             </button>
           </div>
         </div>
@@ -102,31 +124,53 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from "~/stores/auth";
+
 const isMenuOpen = ref(false);
+const authStore = useAuthStore();
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
 const route = useRoute();
-const routePath = route.path;
-console.log(routePath, route)
+const routePath = computed(() => {
+  return route.path;
+});
+
+watch(routePath, () => {
+  isMenuOpen.value = false;
+});
+
 const routes = [
-  { name: "Service", path: "/service", isActualPage: computed(() => routePath === "/service") },
-  { name: "How it Works", path: "/how-it-works", isActualPage: computed(() => routePath === "/how-it-works") },
-  { name: "Providers", path: "/providers", isActualPage: computed(() => routePath === "/providers") },
-  { name: "About Us", path: "/about-us", isActualPage: computed(() => routePath === "/about-us") },
+  {
+    name: "Service",
+    path: "/service",
+    isActualPage: computed(() => routePath.value === "/service"),
+  },
+  {
+    name: "How it Works",
+    path: "/how-it-works",
+    isActualPage: computed(() => routePath.value === "/how-it-works"),
+  },
+  {
+    name: "Providers",
+    path: "/providers",
+    isActualPage: computed(() => routePath.value === "/providers"),
+  },
+  {
+    name: "About Us",
+    path: "/about-us",
+    isActualPage: computed(() => routePath.value === "/about-us"),
+  },
 ];
 
 const isSignUpPage = computed(() => {
-  console.log("Current route:", routePath);
-  console.log("Is signup page:", routePath == "/signup");
-  return routePath == "/signup";
+  return routePath.value == "/signup";
 });
 
 const isLoginPage = computed(() => {
-  return routePath === "/login";
+  return routePath.value === "/login";
 });
-
 </script>
 
 <style scoped>
