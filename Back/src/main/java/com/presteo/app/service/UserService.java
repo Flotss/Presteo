@@ -1,24 +1,29 @@
 package com.presteo.app.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.presteo.app.model.Role;
+import com.presteo.app.model.RoleType;
+import com.presteo.app.model.User;
+import com.presteo.app.repository.RoleRepository;
+import com.presteo.app.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.presteo.app.model.User;
-import com.presteo.app.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
@@ -31,8 +36,10 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(User user) {
+    public User createUser(User user, String roleName) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role role = roleRepository.findByName(RoleType.fromName(roleName));
+        user.setRole(role);
         return userRepository.save(user);
     }
 
@@ -51,15 +58,5 @@ public class UserService {
             userRepository.delete(user);
             return true;
         }).orElse(false);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    @Transactional(readOnly = true)
-    public List<User> findUsersByEmailDomain(String domain) {
-        return userRepository.findByEmailDomain(domain);
     }
 }

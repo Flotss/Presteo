@@ -1,9 +1,9 @@
 <template>
   <header
     id="header"
-    class="w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100"
+    class="w-full bg-white/95 backdrop-blur-sm z-50"
   >
-    <div class="container mx-auto px-4 shadow-inner border-b border-gray-100">
+    <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center">
           <span class="text-2xl font-bold text-blue-600 cursor-pointer">
@@ -23,12 +23,16 @@
         </div>
         <div class="hidden md:flex items-center space-x-4 text-nowrap">
           <NuxtLink
-            to="/login" class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
+            v-if="!isLoginPage"
+            to="/login" 
+            class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
           >
             Login
           </NuxtLink>
           <NuxtLink
-            to="/signup" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition duration-150"
+            v-if="!isSignUpPage"
+            to="/signup" 
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition duration-150"
           >
             Sign Up
           </NuxtLink>
@@ -58,8 +62,8 @@
       </div>
       <Transition
         name="menu"
-        enter-active-class="animate-open-menu"
-        leave-active-class="animate-close-menu"
+        enter-active-class="animate-wrapIn"
+        leave-active-class="animate-wrapOut"
       >
         <div
           v-if="isMenuOpen"
@@ -69,6 +73,7 @@
             v-for="(route, index) in routes"
             :key="route.name"
             class="block text-gray-600 text-center hover:text-blue-600 transition duration-150 openAnimation"
+            :class="{ 'text-blue-600': route.isActualPage }"
             :style="{ animationDelay: `${index * 0.1}s` }"
           >
             <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
@@ -76,16 +81,18 @@
           </span>
           <div class="flex justify-evenly space-x-4">
             <button
+              v-if="!isLoginPage"
               class="bg-gray-200 text-gray-600 px-6 py-2 rounded-full hover:text-blue-600 w-full text-center transition duration-150 openAnimation opacity-0"
               :style="{ animationDelay: `${routes.length * 0.1}s`, animationFillMode: 'forwards' }"
             >
-              Login
+              <NuxtLink to="/login">Login</NuxtLink>
             </button>
             <button
+              v-if="!isSignUpPage"
               class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 w-full text-center transition duration-150 openAnimation opacity-0"
               :style="{ animationDelay: `${routes.length * 0.1 + 0.1}s`, animationFillMode: 'forwards' }"
             >
-              Sign Up
+              <NuxtLink to="/signup">Sign Up</NuxtLink>
             </button>
           </div>
         </div>
@@ -100,12 +107,26 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
+const route = useRoute();
+const routePath = route.path;
+console.log(routePath, route)
 const routes = [
-  { name: "Service", path: "/service" },
-  { name: "How it Works", path: "/how-it-works" },
-  { name: "Providers", path: "/providers" },
-  { name: "About Us", path: "/about-us" },
+  { name: "Service", path: "/service", isActualPage: computed(() => routePath === "/service") },
+  { name: "How it Works", path: "/how-it-works", isActualPage: computed(() => routePath === "/how-it-works") },
+  { name: "Providers", path: "/providers", isActualPage: computed(() => routePath === "/providers") },
+  { name: "About Us", path: "/about-us", isActualPage: computed(() => routePath === "/about-us") },
 ];
+
+const isSignUpPage = computed(() => {
+  console.log("Current route:", routePath);
+  console.log("Is signup page:", routePath == "/signup");
+  return routePath == "/signup";
+});
+
+const isLoginPage = computed(() => {
+  return routePath === "/login";
+});
+
 </script>
 
 <style scoped>
@@ -115,32 +136,6 @@ const routes = [
 
 .hamburger-menu {
   overflow: hidden;
-}
-
-.animate-open-menu {
-  animation: wrapIn 0.4s ease-in-out;
-}
-
-.animate-close-menu {
-  animation: wrapOut 0.4s ease-in-out;
-}
-
-@keyframes wrapIn {
-  from {
-    max-height: 0;
-  }
-  to {
-    max-height: 500px;
-  }
-}
-
-@keyframes wrapOut {
-  from {
-    max-height: 500px;
-  }
-  to {
-    max-height: 0;
-  }
 }
 
 @keyframes slideIn {

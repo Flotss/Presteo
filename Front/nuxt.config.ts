@@ -14,6 +14,15 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-svg-core/styles.css',
   ],
 
+  components: [
+    {
+      path: '~/components/',
+      pathPrefix: false,
+      extensions: ['vue'],
+      pattern: '**/*.vue'
+    }
+  ],
+
   plugins: [
     { src: '../plugins/fontawesome.ts' },
   ],
@@ -38,7 +47,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Presteo - Plateforme de gestion de services' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/public/favicon.ico' },
       ]
     }
   },
