@@ -13,7 +13,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 defineProps({
   isMet: {
     type: Boolean,

@@ -93,11 +93,6 @@ const customers: TerimonialCustomer[] = [
     Name: 'Emma Davis',
     stars: 5,
     message: 'Regular cleaning service bookings made easy. The review system helps maintain high service quality. Perfect for busy professionals!',
-    },
-    {
-        Name: 'Liam Brown',
-        stars: 3,
-        message: 'The platform is convenient, but I faced some delays with the service provider. Overall, a decent experience.',
-    }
+  },
 ];
 </script>

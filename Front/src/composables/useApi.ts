@@ -9,17 +9,46 @@ export function useApi<T>(endpoint: string) {
   const env = useEnvironment();
   const baseUrl = env.apiBaseUrl;
 
+  const token = useCookie("bearer").value;
+
+  const headers = new Headers(
+    token
+      ? {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      : {
+          "Content-Type": "application/json",
+        }
+  );
+
+  const parseResponse = async (response: Response) => {
+    const contentType = response.headers.get("Content-Type") || "";
+    if (contentType.includes("application/json")) {
+      return response.json();
+    } else if (contentType.includes("text/html")) {
+      return response.text();
+    } else if (contentType.includes("text/plain")) {
+      return response.text();
+    } else {
+      throw new Error(`Unsupported content type: ${contentType}`);
+    }
+  }
+
   const fetchData = async () => {
     loading.value = true;
     error.value = null;
 
     try {
       envLogger.log(`Fetching data from ${baseUrl}/${endpoint}`);
-      const response = await fetch(`${baseUrl}/${endpoint}`);
+      const response = await fetch(`${baseUrl}/${endpoint}`, {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      data.value = await response.json();
+      data.value = await parseResponse(response);
       envLogger.log(`Data successfully fetched from ${endpoint}`, data.value);
     } catch (err: any) {
       error.value = err.message || "Une erreur est survenue";
@@ -38,17 +67,16 @@ export function useApi<T>(endpoint: string) {
       envLogger.log(`Posting data to ${baseUrl}/${endpoint}`, payload);
       const response = await fetch(`${baseUrl}/${endpoint}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = await parseResponse(response);
       envLogger.log(`Data successfully posted to ${endpoint}`, result);
       return result;
     } catch (err: any) {
@@ -70,17 +98,16 @@ export function useApi<T>(endpoint: string) {
 
       const response = await fetch(url, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = await parseResponse(response);
       envLogger.log(`Data successfully updated at ${url}`, result);
       return result;
     } catch (err: any) {
@@ -101,7 +128,9 @@ export function useApi<T>(endpoint: string) {
       envLogger.log(`Deleting data at ${url}`);
 
       const response = await fetch(url, {
+        headers,
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {

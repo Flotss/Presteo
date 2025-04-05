@@ -4,7 +4,15 @@
   >
     <div class="container border rounded-lg shadow-lg bg-white p-8 max-w-md mx-auto">
       <h1 class="text-3xl font-bold text-center mb-6">Login</h1>
-      <form @submit.prevent="handleLogin">
+      <p v-if="loginMessage.message" 
+      class="text-sm text-center mb-4"
+      :class="{
+        'text-red-500': !loginMessage.isSuccess,
+        'text-green-500': loginMessage.isSuccess,
+      }"
+      >
+        {{ loginMessage.message }}</p>
+      <form @submit.prevent="handleLogin" novalidate>
         <div class="mb-4">
           <label for="email" class="block text-gray-700">Email</label>
           <input
@@ -12,8 +20,12 @@
             id="email"
             v-model="email"
             class="w-full border rounded px-3 py-2"
+            :class="{
+              'placeholder-red-300': placeHolderEmailError,
+            }"
+            :placeholder="placeHolderEmailError ? placeHolderEmailError : 'jean.dupont@example.com'"
           />
-          <span v-if="emailError" class="text-red-500 text-sm">{{ emailError }}</span>
+          <span v-if="formatEmailError" class="text-red-500 text-sm">{{ formatEmailError }}</span>
         </div>
         <div class="mb-4">
           <label for="password" class="block text-gray-700">Password</label>
@@ -21,46 +33,9 @@
             type="password"
             id="password"
             v-model="password"
-            class="w-full border rounded px-3 py-2"
-            @focus="showPasswordRequirements = true"
-            @blur="showPasswordRequirements = false"
+            class="w-full border rounded px-3 py-2 placeholder-red-300"
+            :placeholder="passwordError ? passwordError : ''"
           />
-          <span v-if="passwordError" class="text-red-500 text-sm">{{ passwordError }}</span>
-          <Transition
-            name="menu"
-            class="transition-[height] duration-300"
-            enter-active-class="animate-password-specification-open"
-            leave-active-class="animate-password-specification-close">
-            <div v-if="showPasswordRequirements" class="text-gray-600 text-sm mt-2">
-              <p>Password must meet the following requirements:</p>
-              <div>
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.length" 
-                  text="At least 8 characters" 
-                />
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.length" 
-                  text="At least 8 characters" 
-                />
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.uppercase" 
-                  text="At least one uppercase letter" 
-                />
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.lowercase" 
-                  text="At least one lowercase letter" 
-                />
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.number" 
-                  text="At least one number" 
-                />
-                <PasswordRequirement 
-                  :isMet="passwordRequirements.special" 
-                  text="At least one special character" 
-                />
-              </div>
-            </div>
-          </Transition>
         </div>
         <button
           type="submit"
@@ -92,19 +67,36 @@
 </template>
 
 <script lang="ts" setup>
-
 const submit = ref(false);
 const email = ref('');
 const password = ref('');
+const loginMessage = ref({
+  message: '',
+  isSuccess: false,
+}); 
 
-const emailError = computed(() => {
+const { postData } = useApi('auth/signin');
+
+const placeHolderEmailError = computed(() => {
   if (!submit.value) {
-    return;
+    return '';
   }
 
   if (!email.value) {
     return 'Email is required';
   }
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email.value)) {
+    return 'Invalid email format';
+  }
+  return '';
+});
+
+const formatEmailError = computed(() => {
+  if (!submit.value) {
+    return '';
+  }
+
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
     return 'Invalid email format';
@@ -122,25 +114,6 @@ const passwordError = computed(() => {
   }
   return '';
 });
-
-const showPasswordRequirements = ref(false);
-
-const passwordLength = computed(() => password.value.length >= 8);
-const hasUppercase = computed(() => /[A-Z]/.test(password.value));
-const hasLowercase = computed(() => /[a-z]/.test(password.value));
-const hasNumber = computed(() => /[0-9]/.test(password.value));
-const hasSpecial = computed(() => /[!@#$%^&*(),.?":{}|<>]/.test(password.value));
-
-const passwordRequirements = computed(() => {
-  return {
-    length: passwordLength.value,
-    uppercase: hasUppercase.value,
-    lowercase: hasLowercase.value,
-    number: hasNumber.value,
-    special: hasSpecial.value,
-  };
-});
-
 
 const allInputRequired = computed(() => {
   return email.value && password.value;
@@ -161,6 +134,25 @@ const handleLogin = () => {
   // router.push('/dashboard');
   // For now, just log the values
   console.log('Email:', email.value);
+
+  loginMessage.value.message = email.value + " | " + password.value;  
+  loginMessage.value.isSuccess = true; 
+  console.log('Login Message:', loginMessage.value);
+
+  // Example API call to login
+  postData({ login: email.value, password: password.value })
+    .then((response) => {
+      // Handle successful login response
+      console.log('Login successful:', response.data);
+      loginMessage.value.message = 'Login successful!';
+      loginMessage.value.isSuccess = true;
+    })
+    .catch((error) => {
+      // Handle error response
+      console.error('Login failed:', error);
+      loginMessage.value.message = 'Login failed. Please try again.';
+      loginMessage.value.isSuccess = false;
+    });
 };
 
 
@@ -168,35 +160,4 @@ const handleLogin = () => {
 </script>
 
 <style>
-
-/* ! TODO: ça doit etre dans signup */
-.animate-password-specification-open {
-  animation: wrapIn 0.4s ease-in-out;
-}
-
-.animate-password-specification-close {
-  animation: wrapOut 0.4s ease-in-out;
-}
-
-@keyframes wrapIn {
-  from {
-    max-height: 0;
-    opacity: 0;
-  }
-  to {
-    max-height: 500px; /* Adjusted to fit content */
-    opacity: 1;
-  }
-}
-
-@keyframes wrapOut {
-  from {
-    max-height: 500px; /* Adjusted to fit content */
-    opacity: 1;
-  }
-  to {
-    max-height: 0;
-    opacity: 0;
-  }
-}
 </style>
