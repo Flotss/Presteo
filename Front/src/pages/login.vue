@@ -40,8 +40,22 @@
         <button
           type="submit"
           class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition duration-150"
+            :class="{
+            'bg-green-400': loginMessage.isSuccess && !loading,
+            'bg-blue-600': allInputRequired && !loginMessage.isSuccess,
+            'bg-gray-400': !allInputRequired && !loginMessage.isSuccess,
+            }"
+          :disabled="loading"
         >
-          Login
+            <span v-if="loading" class="flex justify-center items-center">
+              <font-awesome-icon :icon="['fas', 'circle-notch']" class="animate-spin" />
+            </span>
+            <span v-else-if="loginMessage.isSuccess" class="flex justify-center items-center">
+              <font-awesome-icon :icon="['fas', 'check']" class="text-black" />
+            </span>
+            <span v-else>
+            Login
+            </span>
         </button>
         <!-- google -->
         <div class="flex items-center justify-center mt-4">
@@ -75,7 +89,7 @@ const loginMessage = ref({
   isSuccess: false,
 }); 
 
-const { postData } = useApi('auth/signin');
+const { postData, loading } = useApi('auth/signin');
 
 const placeHolderEmailError = computed(() => {
   if (!submit.value) {
@@ -125,30 +139,34 @@ const handleLogin = () => {
   if (!allInputRequired.value) {
     return;
   }
-  // Handle login logic here
-  console.log('Logging in with:', email.value, password.value);
-  // You can use a service or API call to authenticate the user
-  // For example:
-  // await authService.login(email.value, password.value);
-  // after successful login, redirect to the dashboard or home page
-  // router.push('/dashboard');
-  // For now, just log the values
-  console.log('Email:', email.value);
 
-  loginMessage.value.message = email.value + " | " + password.value;  
-  loginMessage.value.isSuccess = true; 
-  console.log('Login Message:', loginMessage.value);
-
-  // Example API call to login
   postData({ login: email.value, password: password.value })
     .then((response) => {
-      // Handle successful login response
-      console.log('Login successful:', response.data);
-      loginMessage.value.message = 'Login successful!';
-      loginMessage.value.isSuccess = true;
+      if (response == "Authentication successful !") {
+        loginMessage.value.message = 'Login successful!';
+        loginMessage.value.isSuccess = true;
+
+        setTimeout(() => {
+          loginMessage.value.message = 'Redirecting in 1 second...';
+        }, 1000); 
+
+        setTimeout(() => {
+          const router = useRouter();
+          router.push('/');
+        }, 2000); 
+
+        return;
+      }
+
+      if (response.message == "Invalid credentials") {
+        loginMessage.value.message = 'Invalid credentials. Please try again.';
+      } else {
+        loginMessage.value.message = 'An unexpected error occurred. Please try again.';
+      }
+
+      loginMessage.value.isSuccess = false;
     })
     .catch((error) => {
-      // Handle error response
       console.error('Login failed:', error);
       loginMessage.value.message = 'Login failed. Please try again.';
       loginMessage.value.isSuccess = false;

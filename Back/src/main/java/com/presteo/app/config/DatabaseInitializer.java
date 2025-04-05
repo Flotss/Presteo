@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 public class DatabaseInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
 
     @Autowired
     public DatabaseInitializer(RoleRepository roleRepository, UserRepository userRepository) {
         this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
     }
 
     @Override

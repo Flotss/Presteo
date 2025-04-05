@@ -31,17 +31,25 @@ public class SecurityAspect {
         boolean hasRequiredRole = userDetails.getAuthorities().stream()
                 .anyMatch(authority -> {
                     String userRole = authority.getAuthority();
-                    for (RoleType requiredRole : roles) {
-                        if (userRole.equals("ROLE_" + requiredRole.name())) {
-                            return true;
-                        }
-                    }
-                    return false;
+                    return isRoleAllowed(userRole, roles);
                 });
 
         if (!hasRequiredRole) {
             throwAccessDeniedRoleException();
         }
+    }
+
+    private boolean isRoleAllowed(String userRole, RoleType[] roles) {
+        if (roles.length == 0) {
+            return true; // No roles specified, allow access
+        }
+
+        for (RoleType role : roles) {
+            if (userRole.equals("ROLE_" + role.name())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void throwAccessDeniedRoleException() {
