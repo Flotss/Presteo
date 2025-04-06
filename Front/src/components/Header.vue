@@ -24,6 +24,7 @@
             v-if="!isLoginPage && !authStore.isLoggedIn"
             to="/login"
             class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
+            :class="{ 'bg-blue-600 text-white px-6 py-2 rounded-full hover:text-white hover:bg-blue-700': isSignUpPage }"
           >
             Login
           </NuxtLink>

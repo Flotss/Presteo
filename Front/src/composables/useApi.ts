@@ -9,18 +9,9 @@ export function useApi<T>(endpoint: string) {
   const env = useEnvironment();
   const baseUrl = env.apiBaseUrl;
 
-  const token = useCookie("bearer").value;
-
-  const headers = new Headers(
-    token
-      ? {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        }
-      : {
-          "Content-Type": "application/json",
-        }
-  );
+  const headers = new Headers({
+    "Content-Type": "application/json",
+  });
 
   const parseResponse = async (response: Response) => {
     const contentType = response.headers.get("Content-Type") || "";
