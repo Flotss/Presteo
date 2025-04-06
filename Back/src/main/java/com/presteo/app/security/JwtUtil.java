@@ -40,7 +40,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Get username from JWT token
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key).build()
@@ -61,7 +60,6 @@ public class JwtUtil {
         Cookie cookie = new Cookie("bearer", token);
         cookie.setMaxAge((int) Duration.ofMillis(jwtExpirationMs).getSeconds());
         cookie.setPath("/");
-        cookie.setValue(token);
         return cookie;
     }
 

@@ -31,9 +31,10 @@ export const useAuthStore = defineStore("auth", () => {
       fetchUserData();
     }
 
-    watch(tokenCookie, (newVal) => {
+    watch(tokenCookie, async (newVal) => {
       if (newVal) {
-        fetchUserData();
+        await fetchUserData();
+        await nextTick();
       } else {
         user.value = null;
       }

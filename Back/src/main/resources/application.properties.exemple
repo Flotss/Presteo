@@ -1,10 +1,17 @@
 spring.application.name=Presteo
+hostname=${HOSTNAME:localhost}
 
 # Configuration Database
 spring.datasource.url=jdbc:postgresql://<host>:<port>/<database>?currentSchema=<schema>&sslmode=<sslmode>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
 spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.datasource.hikari.max-lifetime=1800000
+spring.datasource.hikari.idle-timeout=600000
+spring.datasource.hikari.connection-timeout=30000
+spring.datasource.hikari.minimum-idle=5
+spring.datasource.hikari.maximum-pool-size=10
 
 # Configuration JPA/Hibernate
 spring.jpa.hibernate.ddl-auto=update
@@ -27,3 +34,9 @@ springdoc.swagger-ui.enabled=true
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui
 springdoc.enable-spring-security=false
+server.servlet.session.cookie.same-site=none
+
+# JWT Configuration
+jwt.secret=${JWT_SECRET}
+jwt.expiration=${JWT_EXPIRATION}
+

@@ -41,9 +41,10 @@
           label="Email"
           type="email"
           v-model="email"
+          formatRegex="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          formatString="jean.dupont@example.com"
           :submit="submit"
-          :error="formatEmailError"
-          :placeholder="'jean.dupont@example.com'"
+          placeholder="jean.dupont@example.com"
         />
         <FormAddressInput
           id="address"
@@ -57,6 +58,8 @@
           label="Phone Number"
           type="tel"
           v-model="phoneNumber"
+          formatRegex="^0\d{9}$"
+          formatString="01234567890"
           :submit="submit"
           :placeholder="'Enter your phone number'"
         />
@@ -82,7 +85,6 @@
         <PasswordField
           :submit="submit"
           v-model="password"
-          @update:passwordRequirements="passwordRequirements = $event"
         />
         <FormInput
           id="confirmPassword"
@@ -94,11 +96,11 @@
         />
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition duration-150"
+          class="w-full bg-blue-600 text-white rounded py-2 transition duration-150"
           :class="{
             'bg-green-400': signUpMessage.isSuccess && !loading,
-            'bg-blue-600': allInputRequired && !signUpMessage.isSuccess,
-            'bg-gray-400': !allInputRequired && !signUpMessage.isSuccess,
+            'bg-blue-600 hover:bg-blue-700': allInputRequired && !signUpMessage.isSuccess,
+            'bg-gray-400 cursor-not-allowed': !allInputRequired && !signUpMessage.isSuccess,
           }"
           :disabled="loading"
         >
@@ -151,51 +153,38 @@
 </template>
 <script lang="ts" setup>
 const submit = ref(false);
-const email = ref("test@example.com");
-const password = ref("Test@1234");
-const confirmPassword = ref("Test@1234");
-const username = ref("testuser");
-const firstName = ref("John");
-const lastName = ref("Doe");
-const address = ref(
-  "123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main St, Springfield123 Main S"
-);
-const gender = ref("male");
-const birthDate = ref("1990-01-01");
-const phoneNumber = ref("1234567890");
+const email = ref({ content: "", isValid: false });
+const password = ref({ content: "", isValid: false });
+const confirmPassword = ref({ content: "", isValid: false });
+const username = ref({ content: "", isValid: false });
+const firstName = ref({ content: "", isValid: false });
+const lastName = ref({ content: "", isValid: false });
+const address = ref({ content: "", isValid: false });
+const gender = ref({ content: "", isValid: false });
+const birthDate = ref({ content: "", isValid: false });
+const phoneNumber = ref({ content: "", isValid: false });
 
 const signUpMessage = ref({
   message: "",
   isSuccess: false,
 });
 
-const formatEmailError = computed(() => {
-  if (!submit.value) {
-    return "";
-  }
-
-  if (!email.value) {
-    return "Email is required";
-  }
-
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email.value)) {
-    return "Invalid email format";
-  }
-  return "";
-});
-
-const passwordRequirements = ref(false);
-
 const passwordIsConfirmed = computed(() => {
-  return password.value === confirmPassword.value;
+  return password.value.content === confirmPassword.value.content;
 });
 
 const allInputRequired = computed(() => {
   return (
-    email.value &&
-    password.value &&
-    passwordRequirements.value &&
+    email.value.isValid &&
+    password.value.isValid &&
+    confirmPassword.value.isValid &&
+    username.value.isValid &&
+    firstName.value.isValid &&
+    lastName.value.isValid &&
+    address.value.isValid &&
+    gender.value.isValid &&
+    birthDate.value.isValid &&
+    phoneNumber.value.isValid &&
     passwordIsConfirmed.value
   );
 });
@@ -214,15 +203,15 @@ const { loading, postData } = useApi("auth/signup");
 
 const sendSignUp = async () => {
   const response = await postData({
-    email: email.value,
-    password: password.value,
-    username: username.value,
-    firstName: firstName.value,
-    lastName: lastName.value,
-    address: address.value,
-    gender: gender.value,
-    birthDate: birthDate.value,
-    phoneNumber: phoneNumber.value,
+    email: email.value.content,
+    password: password.value.content,
+    username: username.value.content,
+    firstName: firstName.value.content,
+    lastName: lastName.value.content,
+    address: address.value.content,
+    gender: gender.value.content,
+    birthDate: birthDate.value.content,
+    phoneNumber: phoneNumber.value.content,
   });
   if (response == 'User registered successfully!') {
     signUpMessage.value.message = "Sign up successful!";

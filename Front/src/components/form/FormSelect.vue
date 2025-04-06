@@ -5,9 +5,9 @@
     </div>
     <select
       :id="id"
-      :value="modelValue"
+      :value="modelValue.content"
       class="w-full border rounded px-3 py-2"
-      @change="$emit('update:modelValue', $event.target.value)"
+      @change="handleSelectChange"
     >
       <option
         v-for="option in options"
@@ -31,7 +31,11 @@ const props = defineProps({
   submit: { type: Boolean, default: false },
   id: { type: String, required: true },
   label: { type: String, required: true },
-  modelValue: { type: String, required: true },
+  modelValue: { 
+    type: Object, 
+    required: true, 
+    default: () => ({ content: '', isValid: false }) 
+  },
   error: { type: String, default: "" },
   options: {
     type: Array,
@@ -45,9 +49,13 @@ const props = defineProps({
   },
 });
 
-defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const hasValue = computed(() => {
-  return props.modelValue?.length > 0;
+  return props.modelValue.content.length > 0;
 });
+
+const handleSelectChange = (event) => {
+  emit("update:modelValue", { content: event.target.value, isValid: hasValue.value });
+};
 </script>

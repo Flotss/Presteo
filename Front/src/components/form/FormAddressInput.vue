@@ -7,7 +7,7 @@
       <input
         :type="type"
         :id="id"
-        :value="modelValue"
+        :value="modelValue.content"
         class="w-full border rounded px-3 py-2"
         :placeholder="placeholder"
         @input="handleInput"
@@ -46,7 +46,11 @@ const props = defineProps({
   id: { type: String, required: true },
   label: { type: String, required: true },
   type: { type: String, default: "text" },
-  modelValue: { type: String, required: true },
+  modelValue: { 
+    type: Object, 
+    required: true, 
+    default: () => ({ content: '', isValid: false }) 
+  },
   error: { type: String, default: "" },
   placeholder: { type: String, default: "" },
 });
@@ -54,7 +58,7 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const hasValue = computed(() => {
-  return props.modelValue?.length > 0;
+  return props.modelValue?.content.length > 0;
 });
 
 const suggestions = ref([]);
@@ -64,7 +68,7 @@ const blurTimeout = ref(null);
 
 const handleInput = (event) => {
   const query = event.target.value;
-  emit("update:modelValue", query);
+  emit("update:modelValue", { content: query, isValid: query.length > 0 });
 
   if (searchTimeout.value) {
     clearTimeout(searchTimeout.value);
@@ -94,7 +98,7 @@ const fetchAddressSuggestions = async (query) => {
           t.display_name === item.display_name
         ))
       );
-      showSuggestions.value = true;
+      showSuggestions.value = suggestions.value.length > 0;
     } else {
       console.error("Failed to fetch address suggestions");
       suggestions.value = [];
@@ -106,7 +110,7 @@ const fetchAddressSuggestions = async (query) => {
 };
 
 const selectSuggestion = (suggestion) => {
-  emit("update:modelValue", suggestion.display_name);
+  emit("update:modelValue", { content: suggestion.display_name, isValid: true });
   suggestions.value = [];
   showSuggestions.value = false;
 };

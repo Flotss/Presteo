@@ -1,5 +1,6 @@
 package com.presteo.app.controller;
 
+import com.presteo.app.CookieUtils;
 import com.presteo.app.model.RoleType;
 import com.presteo.app.model.User;
 import com.presteo.app.repository.UserRepository;
@@ -8,6 +9,7 @@ import com.presteo.app.security.model.AuthenticationRequest;
 import com.presteo.app.security.model.CustomUserDetails;
 import com.presteo.app.service.UserService;
 import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +29,7 @@ public class AuthController {
     private final JwtUtil jwtUtils;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final CookieUtils cookieUtils;
 
     @PostMapping("/signin")
     public String authenticateUser(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
@@ -49,9 +52,9 @@ public class AuthController {
         String jwt = jwtUtils.generateToken(userDetails.getUsername(), userDetails.getRole());
 
         // Set the JWT token in the response header
-        response.addCookie(
-                jwtUtils.createCookie(jwt)
-        );
+        Cookie jwtCookie = jwtUtils.createCookie(jwt);
+        cookieUtils.setCookie(response, jwtCookie);
+//        response.addCookie(jwtCookie);
 
         return "Authentication successful !";
     }

@@ -4,12 +4,12 @@
     <input
       type="password"
       id="password"
-      :value="modelValue"
+      :value="modelValue.content"
       class="w-full border rounded px-3 py-2"
       placeholder="Enter your password"
       @focus="showPasswordRequirements = true"
       @blur="showPasswordRequirements = false"
-      @input="emit('update:modelValue', $event.target.value)"
+      @input="handleInput"
       @keydown.enter="showPasswordRequirements = false"
     />
     <span v-if="passwordError" class="text-red-500 text-sm">{{
@@ -52,39 +52,37 @@
 
 <script setup>
 const props = defineProps({
-  modelValue: { type: String, required: true },
+  modelValue: { 
+    type: Object, 
+    required: true, 
+    default: () => ({ content: '', isValid: false }) 
+  },
   submit: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["update:modelValue", "update:passwordRequirements"]);
-
-
 const showPasswordRequirements = ref(false);
 
+const value = computed({
+  get: () => {
+    return props.modelValue.content;
+  },
+});
+
+const createRequirement = (regex, errorText) => computed(() => ({
+  isValid: regex.test(value.value),
+  errorText: regex.test(value.value) ? '' : errorText,
+}));
+
 const passwordLength = computed(() => ({
-  isValid: props.modelValue.length >= 8,
-  errorText: props.modelValue.length >= 8 ? '' : 'Password must be at least 8 characters long',
+  isValid: value.value.length >= 8,
+  errorText: value.value.length >= 8 ? '' : 'Password must be at least 8 characters long',
 }));
 
-const hasUppercase = computed(() => ({
-  isValid: /[A-Z]/.test(props.modelValue),
-  errorText: /[A-Z]/.test(props.modelValue) ? '' : 'Password must contain at least one uppercase letter',
-}));
-
-const hasLowercase = computed(() => ({
-  isValid: /[a-z]/.test(props.modelValue),
-  errorText: /[a-z]/.test(props.modelValue) ? '' : 'Password must contain at least one lowercase letter',
-}));
-
-const hasNumber = computed(() => ({
-  isValid: /[0-9]/.test(props.modelValue),
-  errorText: /[0-9]/.test(props.modelValue) ? '' : 'Password must contain at least one number',
-}));
-
-const hasSpecial = computed(() => ({
-  isValid: /[!@#$%^&*(),.?":{}|<>]/.test(props.modelValue),
-  errorText: /[!@#$%^&*(),.?":{}|<>]/.test(props.modelValue) ? '' : 'Password must contain at least one special character',
-}));
+const hasUppercase = createRequirement(/[A-Z]/, 'Password must contain at least one uppercase letter');
+const hasLowercase = createRequirement(/[a-z]/, 'Password must contain at least one lowercase letter');
+const hasNumber = createRequirement(/[0-9]/, 'Password must contain at least one number');
+const hasSpecial = createRequirement(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character');
 
 
 const passwordRequirements = computed(() => {
@@ -96,8 +94,11 @@ const passwordRequirements = computed(() => {
     special: hasSpecial.value,
   };
 
-  emit('update:passwordRequirements', Object.values(requirements).every(req => req.isValid));
   return requirements;
+});
+
+const isValid = computed(() => {
+  return Object.values(passwordRequirements.value).every((req) => req.isValid);
 });
 
 const passwordError = computed(() => {
@@ -105,7 +106,7 @@ const passwordError = computed(() => {
     return '';
   }
 
-  if (!props.modelValue) {
+  if (!value) {
     return 'Password is required';
   }
 
@@ -114,8 +115,11 @@ const passwordError = computed(() => {
       return requirement.errorText;
     }
   }
-
-  
   return '';
 });
+
+const handleInput = (event) => {
+  const newValue = event.target.value;
+  emit('update:modelValue', { content: newValue, isValid: isValid.value });
+};
 </script>
