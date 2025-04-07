@@ -70,18 +70,6 @@
           v-model="birthDate"
           :submit="submit"
         />
-        <FormSelect
-          id="gender"
-          label="Gender"
-          v-model="gender"
-          :submit="submit"
-          :options="[
-            { value: '', text: 'Select your gender' },
-            { value: 'male', text: 'Male' },
-            { value: 'female', text: 'Female' },
-            { value: 'other', text: 'Other' },
-          ]"
-        />
         <PasswordField
           :submit="submit"
           v-model="password"
@@ -160,7 +148,6 @@ const username = ref({ content: "", isValid: false });
 const firstName = ref({ content: "", isValid: false });
 const lastName = ref({ content: "", isValid: false });
 const address = ref({ content: "", isValid: false });
-const gender = ref({ content: "", isValid: false });
 const birthDate = ref({ content: "", isValid: false });
 const phoneNumber = ref({ content: "", isValid: false });
 
@@ -182,7 +169,6 @@ const allInputRequired = computed(() => {
     firstName.value.isValid &&
     lastName.value.isValid &&
     address.value.isValid &&
-    gender.value.isValid &&
     birthDate.value.isValid &&
     phoneNumber.value.isValid &&
     passwordIsConfirmed.value
@@ -209,7 +195,6 @@ const sendSignUp = async () => {
     firstName: firstName.value.content,
     lastName: lastName.value.content,
     address: address.value.content,
-    gender: gender.value.content,
     birthDate: birthDate.value.content,
     phoneNumber: phoneNumber.value.content,
   });
@@ -227,7 +212,7 @@ const sendSignUp = async () => {
     }, 2000);
   } else {
     console.error("Sign up failed:", response);
-    signUpMessage.value.message = "Sign up failed, please try again.";
+    signUpMessage.value.message = `Sign up failed, please try again. ${response.error}`;
     signUpMessage.value.isSuccess = false;
   }
 };

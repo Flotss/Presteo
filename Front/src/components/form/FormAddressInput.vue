@@ -39,8 +39,6 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-
 const props = defineProps({
   submit: { type: Boolean, default: false },
   id: { type: String, required: true },

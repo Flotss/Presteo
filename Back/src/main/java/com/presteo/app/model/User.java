@@ -46,11 +46,6 @@ public class User {
     @NotNull
     private String address;
 
-    @NotBlank(message = "Gender is required")
-    @Size(min = 1, max = 10, message = "Gender must be between 1 and 10 characters")
-    @NotNull
-    private String gender;
-
     @NotBlank(message = "Birth date is required")
     @Size(min = 10, max = 10, message = "Birth date must be in the format YYYY-MM-DD")
     @NotNull

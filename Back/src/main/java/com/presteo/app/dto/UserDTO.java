@@ -34,7 +34,6 @@ public class UserDTO {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .address(user.getAddress())
-                .gender(user.getGender())
                 .birthDate(user.getBirthDate())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole()).build();
