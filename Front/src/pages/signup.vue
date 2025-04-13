@@ -95,7 +95,7 @@
           <span v-if="loading" class="flex justify-center items-center">
             <font-awesome-icon
               :icon="['fas', 'circle-notch']"
-              class="animate-spin"
+              spin
             />
           </span>
           <span

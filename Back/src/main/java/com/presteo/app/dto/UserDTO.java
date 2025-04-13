@@ -21,12 +21,12 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String address;
-    private String gender;
     private String birthDate;
     private String phoneNumber;
     private Role role;
+    private String description;
 
-    public static UserDTO Build(User user) {
+    public static UserDTO build(User user) {
         return builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -36,6 +36,8 @@ public class UserDTO {
                 .address(user.getAddress())
                 .birthDate(user.getBirthDate())
                 .phoneNumber(user.getPhoneNumber())
-                .role(user.getRole()).build();
+                .role(user.getRole())
+                .description(user.getDescription() != null ? user.getDescription().getDescription() : "")
+                .build();
     }
 }

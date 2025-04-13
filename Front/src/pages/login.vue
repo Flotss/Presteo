@@ -39,16 +39,16 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition duration-150"
+          class="w-full text-white rounded py-2 transition duration-150"
             :class="{
             'bg-green-400': loginMessage.isSuccess && !loading,
-            'bg-blue-600': allInputRequired && !loginMessage.isSuccess,
+            'bg-blue-600 hover:bg-blue-700': allInputRequired && !loginMessage.isSuccess,
             'bg-gray-400': !allInputRequired && !loginMessage.isSuccess,
             }"
           :disabled="loading"
         >
             <span v-if="loading" class="flex justify-center items-center">
-              <font-awesome-icon :icon="['fas', 'circle-notch']" class="animate-spin" />
+              <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
             </span>
             <span v-else-if="loginMessage.isSuccess" class="flex justify-center items-center">
               <font-awesome-icon :icon="['fas', 'check']" class="text-black" />
@@ -81,6 +81,7 @@
 </template>
 
 <script lang="ts" setup>
+const route = useRoute();
 const submit = ref(false);
 const email = ref('');
 const password = ref('');
@@ -152,7 +153,7 @@ const handleLogin = () => {
 
         setTimeout(() => {
           const router = useRouter();
-          router.push('/');
+          router.push(route.query.redirect as string || '/');
         }, 2000); 
 
         return;

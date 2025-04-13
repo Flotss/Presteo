@@ -9,10 +9,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+
+import static org.hibernate.annotations.CascadeType.REMOVE;
 
 @Data
 @NoArgsConstructor
@@ -44,6 +47,7 @@ public class User {
     @NotBlank(message = "Address is required")
     @Size(min = 3, message = "Address must be at least 3 characters")
     @NotNull
+    @Column(unique = true)
     private String address;
 
     @NotBlank(message = "Birth date is required")
@@ -73,8 +77,9 @@ public class User {
     private Role role;
 
     @OneToOne(mappedBy = "user")
+    @Cascade(value = REMOVE)
     @Nullable
-    private UserDescription descriptions;
+    private UserDescription description;
 
     @CreationTimestamp
     @Column(updatable = false)

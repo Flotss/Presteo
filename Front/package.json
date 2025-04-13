@@ -19,6 +19,7 @@
     "@nuxt/image": "1.9.0",
     "@nuxtjs/tailwindcss": "^6.13.2",
     "@pinia/nuxt": "^0.10.1",
+    "@vue/runtime-dom": "^3.5.13",
     "eslint": "^9.0.0",
     "nuxt": "^3.16.0",
     "pinia": "^3.0.1",

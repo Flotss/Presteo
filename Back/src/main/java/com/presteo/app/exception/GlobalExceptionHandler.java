@@ -1,5 +1,6 @@
 package com.presteo.app.exception;
 
+import com.presteo.app.security.SecurityConstants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.UNAUTHORIZED.value());
-        response.put("message", "Access denied");
+        response.put("message", SecurityConstants.ACCESS_DENIED_MESSAGE);
         response.put("error", ex.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);

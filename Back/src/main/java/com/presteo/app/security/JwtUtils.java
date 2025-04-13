@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.util.Date;
 
 @Component
-public class JwtUtil {
+public class JwtUtils {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -36,6 +36,15 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(String username, Date issuedAt, Date expiresAt) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiresAt)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

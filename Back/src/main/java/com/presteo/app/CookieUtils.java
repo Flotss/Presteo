@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class CookieUtils {
 
     @Value("${hostname}")
-    private  String hostname;
+    private String hostname;
 
     public void setCookie(HttpServletResponse response, Cookie cookie) {
         boolean isLocalHost = hostname.contains("localhost");

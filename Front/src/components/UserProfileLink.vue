@@ -6,10 +6,12 @@
       @mouseover="showMenu = true"
       @mouseleave="showMenu = false"
     >
-      <NuxtLink to="/profile" class="flex items-center">
+      <NuxtLink :to="`/user/${authStore.user.id}/profile`" class="flex items-center">
         <div class="h-10 w-10">
-          <img
-            :src="'https://api.dicebear.com/9.x/dylan/svg?seed=' + authStore.user.id"
+          <NuxtImg
+            :src="
+              'https://api.dicebear.com/9.x/dylan/svg?seed=' + authStore.user.id
+            "
             alt="Avatar"
             class="h-10 w-10 rounded-full border border-gray-200"
             :class="{ hidden: !imageLoaded }"
@@ -31,17 +33,20 @@
         class="absolute top-full right-0 bg-white border rounded shadow-lg w-40"
       >
         <NuxtLink
-          to="/profile"
+          :to="`/user/${authStore.user.id}/profile`"
           class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
         >
-            <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
+          <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
           Profile
         </NuxtLink>
         <button
           @click="handleLogout"
           class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
         >
-            <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="mr-2" />
+          <font-awesome-icon
+            :icon="['fas', 'right-from-bracket']"
+            class="mr-2"
+          />
           Logout
         </button>
       </div>
@@ -70,10 +75,10 @@ const authStore = useAuthStore();
 const imageLoaded = ref(false);
 const showMenu = ref(false);
 
-const handleLogout = () => {
+const handleLogout = async () => {
   try {
-    authStore.logout();
     showMenu.value = false;
+    await authStore.logout();
   } catch (error) {
     console.error("Logout failed:", error);
   }
