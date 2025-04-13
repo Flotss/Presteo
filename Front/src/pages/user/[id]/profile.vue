@@ -217,6 +217,7 @@ const notFound = ref(false);
 const authStore = useAuthStore();
 const confirmSave = ref(false);
 const saved = ref(false);
+const isOwnProfile = ref(false);
 
 const canModify = computed(() => {
   return canUserModify(authStore.user, user.value);
@@ -310,9 +311,9 @@ onMounted(() => {
     return;
   }
 
-  const isOwnProfile = authStore.user?.id === Number(userId.value);
+  isOwnProfile.value = authStore.user?.id === Number(userId.value);
   
-  if (isOwnProfile && authStore.user) {
+  if (isOwnProfile.value && authStore.user) {
     user.value = authStore.user;
     initTempUser();
     errorMessage.value = "";
@@ -334,7 +335,9 @@ const save = () => {
       if (response) {
         const responseUser = response as User;
         user.value = { ...responseUser }
-        authStore.user = { ...responseUser }
+        if (isOwnProfile.value) {
+          authStore.user = { ...responseUser }
+        }
         initTempUser();
         errorMessage.value = "";
         saved.value = true;
