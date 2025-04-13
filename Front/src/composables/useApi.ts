@@ -1,141 +1,64 @@
 import { ref } from "vue";
 import { envLogger, useEnvironment } from "~/utils/environment";
 
-export function useApi<T>(endpoint: string) {
+export function useApi<T>(endpoint: string, loadingState?: boolean) {
   const data = ref<T | null>(null);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
+  const loading = ref(loadingState || false);
+  const error = ref<Response | null>(null);
 
   const env = useEnvironment();
   const baseUrl = env.apiBaseUrl;
 
-  const headers = new Headers({
-    "Content-Type": "application/json",
-  });
+  const headers = new Headers({ "Content-Type": "application/json" });
 
   const parseResponse = async (response: Response) => {
     const contentType = response.headers.get("Content-Type") || "";
-    if (contentType.includes("application/json")) {
-      return response.json();
-    } else if (contentType.includes("text/html")) {
-      return response.text();
-    } else if (contentType.includes("text/plain")) {
-      return response.text();
-    } else {
-      throw new Error(`Unsupported content type: ${contentType}`);
-    }
+
+    if (contentType.includes("application/json")) return response.json();
+    if (contentType.includes("text/")) return response.text();
+    throw new Error(`Unsupported content type: ${contentType}`);
   };
 
-  const fetchData = async (): Promise<any> => {
+  const makeRequest = async (method: string, payload?: any): Promise<any> => {
     loading.value = true;
     error.value = null;
+    let url = `${baseUrl}/${endpoint}`;
 
     try {
-      envLogger.log(`Fetching data from ${baseUrl}/${endpoint}`);
-      const response = await fetch(`${baseUrl}/${endpoint}`, {
+      const options: RequestInit = {
+        method,
         headers,
         credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      data.value = await parseResponse(response);
-      envLogger.log(`Data successfully fetched from ${endpoint}`, data.value);
+      };
 
-      return data.value;
+      if (method === "GET" && payload) {
+        const queryParams = new URLSearchParams(payload).toString();
+        url += `?${queryParams}`;
+      } 
+
+      if (payload && ["POST", "PUT", "PATCH"].includes(method)) {
+        options.body = JSON.stringify(payload);
+      }
+
+      envLogger.log(`${method} request to ${url}`, payload || "");
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        error.value = response;
+        data.value = null;
+        envLogger.error(`Error ${method} on ${endpoint}:`, response.statusText);
+        throw await parseResponse(response);
+      }
+
+      const result = method !== "DELETE" ? await parseResponse(response) : true;
+      data.value = result;
+
+      envLogger.log(`${method} successful on ${endpoint}`, result);
+      return result;
     } catch (err: any) {
-      error.value = err.message || "Une erreur est survenue";
+      error.value = err;
       data.value = null;
-      envLogger.error(`Error fetching data from ${endpoint}:`, err);
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const postData = async (payload: any): Promise<any> => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      envLogger.log(`Posting data to ${baseUrl}/${endpoint}`, payload);
-      const response = await fetch(`${baseUrl}/${endpoint}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const result = await parseResponse(response);
-      envLogger.log(`Data successfully posted to ${endpoint}`, result);
-      return result;
-    } catch (err: any) {
-      error.value = err.message || "Une erreur est survenue";
-      envLogger.error(`Error posting data to ${endpoint}:`, err);
-      throw err;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const putData = async (id: string | number, payload: any): Promise<any> => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      const url = `${baseUrl}/${endpoint}${id ? `/${id}` : ""}`;
-      envLogger.log(`Updating data at ${url}`, payload);
-
-      const response = await fetch(url, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const result = await parseResponse(response);
-      envLogger.log(`Data successfully updated at ${url}`, result);
-      return result;
-    } catch (err: any) {
-      error.value = err.message || "Une erreur est survenue";
-      envLogger.error(`Error updating data at ${endpoint}:`, err);
-      throw err;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const deleteData = async (id: string | number): Promise<any> => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      const url = `${baseUrl}/${endpoint}${id ? `/${id}` : ""}`;
-      envLogger.log(`Deleting data at ${url}`);
-
-      const response = await fetch(url, {
-        headers,
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      envLogger.log(`Data successfully deleted at ${url}`);
-      return true;
-    } catch (err: any) {
-      error.value = err.message || "Une erreur est survenue";
-      envLogger.error(`Error deleting data at ${endpoint}:`, err);
-      throw err;
+      envLogger.error(`Error ${method} on ${endpoint}:`, err);
     } finally {
       loading.value = false;
     }
@@ -145,9 +68,9 @@ export function useApi<T>(endpoint: string) {
     data,
     loading,
     error,
-    fetchData,
-    postData,
-    putData,
-    deleteData,
+    fetchData: (payload?: any) => makeRequest("GET", payload),
+    postData: (payload: any) => makeRequest("POST", payload),
+    putData: (payload: any) => makeRequest("PUT", payload),
+    deleteData: () => makeRequest("DELETE"),
   };
 }

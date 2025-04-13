@@ -4,11 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   
-  modules: [
-    '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@nuxt/eslint'
-  ],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/eslint', '@nuxt/image'],
 
   css: [
     '@fortawesome/fontawesome-svg-core/styles.css',
@@ -47,7 +43,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Presteo - Plateforme de gestion de services' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/public/favicon.ico' },
+        { rel: 'icon', type: 'image/x-icon', href: 'favicon.ico' },
       ]
     }
   },

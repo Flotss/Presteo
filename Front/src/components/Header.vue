@@ -1,5 +1,5 @@
 <template>
-  <header id="header" class="w-full bg-white/95 backdrop-blur-sm z-50">
+  <header id="header" class="w-full z-50 shadow-md bg-white">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center">
@@ -59,15 +59,12 @@
           </button>
         </div>
       </div>
-      <Transition
-        name="menu"
-        enter-active-class="animate-wrapIn"
-        leave-active-class="animate-wrapOut"
+      <TransitionOpen
+       :showContent="isMenuOpen"
       >
         <div
-          v-if="isMenuOpen"
           class="md:hidden mt-4 space-y-2 overflow-hidden hamburger-menu pb-2"
-        >
+        > 
           <span
             v-for="(route, index) in routes"
             :key="route.name"
@@ -119,7 +116,7 @@
             </button>
           </div>
         </div>
-      </Transition>
+      </TransitionOpen>
     </div>
   </header>
 </template>

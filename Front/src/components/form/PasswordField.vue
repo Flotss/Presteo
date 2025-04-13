@@ -15,13 +15,10 @@
     <span v-if="passwordError" class="text-red-500 text-sm">{{
       passwordError
     }}</span>
-    <Transition
-      name="menu"
-      class="transition-[height] duration-300"
-      enter-active-class="animate-wrapIn"
-      leave-active-class="animate-wrapOut"
+    <TransitionOpen
+      :showContent="showPasswordRequirements"
     >
-      <div v-if="showPasswordRequirements" class="text-gray-600 text-sm mt-2">
+      <div class="text-gray-600 text-sm mt-2">
         <p>Password must meet the following requirements:</p>
         <div>
           <PasswordRequirement
@@ -46,7 +43,7 @@
           />
         </div>
       </div>
-    </Transition>
+    </TransitionOpen>
   </div>
 </template>
 
@@ -60,14 +57,17 @@ const props = defineProps({
   submit: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:modelValue", "update:passwordRequirements"]);
+const emit = defineEmits(["update:modelValue"]);
 const showPasswordRequirements = ref(false);
 
-const value = computed({
-  get: () => {
-    return props.modelValue.content;
+const value = ref(props.modelValue.content);
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    value.value = newValue.content;
   },
-});
+  { immediate: true }
+);
 
 const createRequirement = (regex, errorText) => computed(() => ({
   isValid: regex.test(value.value),
@@ -118,8 +118,9 @@ const passwordError = computed(() => {
   return '';
 });
 
-const handleInput = (event) => {
-  const newValue = event.target.value;
-  emit('update:modelValue', { content: newValue, isValid: isValid.value });
+const handleInput = async (event) => {
+  value.value = event.target.value;
+  await nextTick();
+  emit('update:modelValue', { content: value.value, isValid: isValid.value });
 };
 </script>

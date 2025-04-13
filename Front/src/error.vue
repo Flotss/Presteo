@@ -2,7 +2,7 @@
   <div>
     <Header />
     <div class="flex-grow">
-      <article class="flex items-center justify-center my-40">
+      <article class="flex items-center justify-center min-h-[60vh]">
         <section class="max-w-md text-center">
           <h1 class="text-5xl font-bold mb-4">Oops!</h1>
           <p class="text-gray-500 mb-4">{{ errorMessage }}</p>

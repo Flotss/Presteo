@@ -14,11 +14,15 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
 
     @Getter
+    private final long id;
+
+    @Getter
     private final String role;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.role = user.getRole().getName().name();
