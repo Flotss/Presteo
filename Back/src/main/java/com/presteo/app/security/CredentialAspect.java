@@ -38,6 +38,7 @@ public class CredentialAspect {
         try {
             Field field = arg.getClass().getDeclaredField("userId");
             field.setAccessible(true);
+            Object value = field.get(arg);
             if (value instanceof Long id) {
                 return id;
             }
