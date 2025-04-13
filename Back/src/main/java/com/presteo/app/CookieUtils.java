@@ -24,7 +24,6 @@ public class CookieUtils {
         if (!isLocalHost) {
             responseCookieBuilder.domain(hostname);
             responseCookieBuilder.secure(true);
-            responseCookieBuilder.httpOnly(true);
             responseCookieBuilder.sameSite("None");
         }
 
