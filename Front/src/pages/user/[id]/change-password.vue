@@ -98,11 +98,12 @@
             'bg-green-400': statusMessage.isSuccess && !api.loading,
             'bg-blue-600 hover:bg-blue-700':
               allInputsValid && !statusMessage.isSuccess,
-            'bg-gray-400 cursor-not-allowed': !allInputsValid && !statusMessage.isSuccess,
+            'bg-gray-400 cursor-not-allowed':
+              !allInputsValid && !statusMessage.isSuccess,
           }"
           :disabled="api.loading && !allInputsValid"
         >
-          <span v-if="api.loading" class="flex justify-center items-center">
+          <span v-if="api.loading.value" class="flex justify-center items-center">
             <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
           </span>
           <span
@@ -143,10 +144,6 @@ const isUsingToken = computed(() => {
   return isNaN(parseInt(userId.value as string));
 });
 
-const token = computed(() => {
-  return isUsingToken.value ? userId.value : null;
-});
-
 const oldPassword = ref("");
 const newPassword = ref({
   content: "",
@@ -169,13 +166,17 @@ const changePasswordAuth = useApi("auth/change-password");
 const changePasswordToken = useApi("auth/change-password-token");
 
 const api = computed(() => {
-  const { postData, loading, error } = isUsingToken.value
-    ? changePasswordToken
-    : changePasswordAuth;
+  const {
+    post: postData,
+    loading,
+    data,
+    error,
+  } = isUsingToken.value ? changePasswordToken : changePasswordAuth;
 
   return {
     postData,
-    loading: loading.value,  
+    data,
+    loading,
     error,
   };
 });
@@ -248,7 +249,9 @@ const handleChangePassword = async () => {
 
   try {
     const response = await api.value.postData(payload);
-    if (response == "Password updated successfully") {
+    const data = api.value.data.value;
+    const error = api.value.error.value;
+    if (data == "Password updated successfully") {
       statusMessage.value.message = "Password changed successfully!";
       statusMessage.value.isSuccess = true;
 
@@ -265,7 +268,7 @@ const handleChangePassword = async () => {
       }, 2000);
     } else {
       console.error("Error while changing password:", api.value.error);
-      statusMessage.value.message = api.value.error.value.error || api.value.error.value.message;
+      statusMessage.value.message = error.error || error.message;
       statusMessage.value.isSuccess = false;
     }
   } catch (err: any) {

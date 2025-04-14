@@ -51,7 +51,7 @@
                   class="flex-1"
                 />
               </div>
-              <UnauthorizedInfo v-else/>
+              <UnauthorizedInfo v-else />
             </div>
           </template>
         </InfoRow>
@@ -65,7 +65,7 @@
                 placeholder="Enter username"
                 id="username"
               />
-              <UnauthorizedInfo v-else/>
+              <UnauthorizedInfo v-else />
             </div>
           </template>
         </InfoRow>
@@ -79,7 +79,7 @@
                 type="date"
                 id="birthDate"
               />
-              <UnauthorizedInfo v-else/>
+              <UnauthorizedInfo v-else />
             </div>
           </template>
         </InfoRow>
@@ -112,7 +112,7 @@
                 format="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
                 formatError="Fomat should be like jean.dupont@domain.com"
               />
-              <UnauthorizedInfo v-else/>
+              <UnauthorizedInfo v-else />
             </div>
           </template>
         </InfoRow>
@@ -134,7 +134,7 @@
                 format="^[0-9]{10}$"
                 formatError="Format should be like 0612345678"
               />
-              <UnauthorizedInfo v-else/>
+              <UnauthorizedInfo v-else />
             </div>
           </template>
         </InfoRow>
@@ -187,7 +187,10 @@
               :disabled="loadingDelete"
             >
               <span>Delete Account</span>
-              <font-awesome-icon v-if="!loadingDelete" icon="fa-solid fa-trash" />
+              <font-awesome-icon
+                v-if="!loadingDelete"
+                icon="fa-solid fa-trash"
+              />
               <font-awesome-icon v-else icon="fa-solid fa-circle-notch" spin />
             </button>
           </div>
@@ -257,20 +260,22 @@ const hasChanges = computed(() => {
   );
 });
 
-const { fetchData, loading, error, data } = useApi<User>(
-  `users/${userId.value}`,
-  true
-);
+const {
+  fetch: fetchData,
+  loading,
+  error,
+  data,
+} = useApi<User>(`users/${userId.value}`, true);
 
 const fetchUser = async () => {
-  await fetchData();
+  const response = await fetchData();
   if (data.value) {
     user.value = data.value;
     initTempUser();
     errorMessage.value = "";
     infoMessage.value = "";
   } else {
-    if (error.value?.status === 404) {
+    if (response.status === 404) {
       notFound.value = true;
       infoMessage.value = "";
     } else {
@@ -301,7 +306,7 @@ onMounted(() => {
     }, 2000);
     return;
   }
-  
+
   if (isNaN(Number(userId.value))) {
     loading.value = false;
     errorMessage.value = "User ID is not a number : " + userId.value;
@@ -312,7 +317,7 @@ onMounted(() => {
   }
 
   isOwnProfile.value = authStore.user?.id === Number(userId.value);
-  
+
   if (isOwnProfile.value && authStore.user) {
     user.value = authStore.user;
     initTempUser();
@@ -324,19 +329,22 @@ onMounted(() => {
   }
 });
 
-const { loading: loadingUpdate, putData: putDataUpdate } = useApi<User>(
-  `users/${userId.value}`
-);
+const {
+  loading: loadingUpdate,
+  put: putDataUpdate,
+  data: dataUpdate,
+  error: errorUpdate,
+} = useApi<User>(`users/${userId.value}`);
 
 const save = () => {
   if (!tempUser.value) return;
   putDataUpdate(tempUser.value)
     .then((response) => {
-      if (response) {
-        const responseUser = response as User;
-        user.value = { ...responseUser }
+      if (response.ok) {
+        const responseUser = dataUpdate.value as User;
+        user.value = { ...responseUser };
         if (isOwnProfile.value) {
-          authStore.user = { ...responseUser }
+          authStore.user = { ...responseUser };
         }
         initTempUser();
         errorMessage.value = "";
@@ -345,6 +353,11 @@ const save = () => {
           saved.value = false;
         }, 2000);
       } else {
+        console.error("Error updating user data:", errorUpdate.value);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
         errorMessage.value = "Failed to update user data.";
       }
     })
@@ -366,7 +379,7 @@ const save = () => {
     });
 };
 
-const { loading: loadingDelete, deleteData } = useApi<User>(
+const { loading: loadingDelete, delete: deleteUser, data: dataDelete, error: errorDelete } = useApi<User>(
   `users/${userId.value}`
 );
 const deleteAccount = () => {
@@ -374,9 +387,9 @@ const deleteAccount = () => {
     "Are you sure you want to delete your account? This action cannot be undone."
   );
   if (confirmDelete) {
-    deleteData()
+    deleteUser()
       .then((response) => {
-        if (response) {
+        if (response.status === 204) {
           infoMessage.value = "Account deleted successfully.";
           window.scrollTo({
             top: 0,
@@ -389,7 +402,6 @@ const deleteAccount = () => {
               authStore.logout();
             }
           }, 2000);
-
         } else {
           errorMessage.value = "Failed to delete account.";
         }

@@ -1,17 +1,21 @@
 <template>
-  <div 
+  <div
     class="flex flex-col justify-center items-center bg-gray-100 sm:min-h-[80vh] min-h-[50vh]"
   >
-    <div class="container border rounded-lg shadow-lg bg-white p-8 max-w-md mx-auto">
+    <div
+      class="container border rounded-lg shadow-lg bg-white p-8 max-w-md mx-auto"
+    >
       <h1 class="text-3xl font-bold text-center mb-6">Login</h1>
-      <p v-if="loginMessage.message" 
-      class="text-sm text-center mb-4"
-      :class="{
-        'text-red-500': !loginMessage.isSuccess,
-        'text-green-500': loginMessage.isSuccess,
-      }"
+      <p
+        v-if="loginMessage.message"
+        class="text-sm text-center mb-4"
+        :class="{
+          'text-red-500': !loginMessage.isSuccess,
+          'text-green-500': loginMessage.isSuccess,
+        }"
       >
-        {{ loginMessage.message }}</p>
+        {{ loginMessage.message }}
+      </p>
       <form @submit.prevent="handleLogin" novalidate>
         <div class="mb-4">
           <label for="email" class="block text-gray-700">Email</label>
@@ -23,9 +27,15 @@
             :class="{
               'placeholder-red-300': placeHolderEmailError,
             }"
-            :placeholder="placeHolderEmailError ? placeHolderEmailError : 'jean.dupont@example.com'"
+            :placeholder="
+              placeHolderEmailError
+                ? placeHolderEmailError
+                : 'jean.dupont@example.com'
+            "
           />
-          <span v-if="formatEmailError" class="text-red-500 text-sm">{{ formatEmailError }}</span>
+          <span v-if="formatEmailError" class="text-red-500 text-sm">{{
+            formatEmailError
+          }}</span>
         </div>
         <div class="mb-4">
           <label for="password" class="block text-gray-700">Password</label>
@@ -40,22 +50,24 @@
         <button
           type="submit"
           class="w-full text-white rounded py-2 transition duration-150"
-            :class="{
+          :class="{
             'bg-green-400': loginMessage.isSuccess && !loading,
-            'bg-blue-600 hover:bg-blue-700': allInputRequired && !loginMessage.isSuccess,
+            'bg-blue-600 hover:bg-blue-700':
+              allInputRequired && !loginMessage.isSuccess,
             'bg-gray-400': !allInputRequired && !loginMessage.isSuccess,
-            }"
+          }"
           :disabled="loading"
         >
-            <span v-if="loading" class="flex justify-center items-center">
-              <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
-            </span>
-            <span v-else-if="loginMessage.isSuccess" class="flex justify-center items-center">
-              <font-awesome-icon :icon="['fas', 'check']" class="text-black" />
-            </span>
-            <span v-else>
-            Login
-            </span>
+          <span v-if="loading" class="flex justify-center items-center">
+            <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
+          </span>
+          <span
+            v-else-if="loginMessage.isSuccess"
+            class="flex justify-center items-center"
+          >
+            <font-awesome-icon :icon="['fas', 'check']" class="text-black" />
+          </span>
+          <span v-else> Login </span>
         </button>
         <!-- google -->
         <div class="flex items-center justify-center mt-4">
@@ -64,17 +76,24 @@
             type="button"
             class="ml-2 bg-white border border-gray-300 rounded px-4 py-2 flex items-center hover:bg-gray-100 transition duration-150"
           >
-            <font-awesome-icon :icon="['fa-brands', 'fa-google']" class="w-5 h-5 mr-2"/>
+            <font-awesome-icon
+              :icon="['fa-brands', 'fa-google']"
+              class="w-5 h-5 mr-2"
+            />
             Login with Google
           </button>
         </div>
       </form>
       <p class="mt-4 text-center">
-        Don't have an account? 
-        <NuxtLink to="/signup" class="text-blue-600 hover:underline">Sign Up</NuxtLink>
+        Don't have an account?
+        <NuxtLink to="/signup" class="text-blue-600 hover:underline"
+          >Sign Up</NuxtLink
+        >
       </p>
       <p class="mt-4 text-center">
-        <NuxtLink to="/forgot-password" class="text-blue-600 hover:underline">Forgot Password?</NuxtLink>
+        <NuxtLink to="/forgot-password" class="text-blue-600 hover:underline"
+          >Forgot Password?</NuxtLink
+        >
       </p>
     </div>
   </div>
@@ -83,40 +102,40 @@
 <script lang="ts" setup>
 const route = useRoute();
 const submit = ref(false);
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 const loginMessage = ref({
-  message: '',
+  message: "",
   isSuccess: false,
-}); 
+});
 
-const { postData, loading } = useApi('auth/signin');
+const { post: postData, data, error, loading } = useApi("auth/signin");
 
 const placeHolderEmailError = computed(() => {
   if (!submit.value) {
-    return '';
+    return "";
   }
 
   if (!email.value) {
-    return 'Email is required';
+    return "Email is required";
   }
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
-    return 'Invalid email format';
+    return "Invalid email format";
   }
-  return '';
+  return "";
 });
 
 const formatEmailError = computed(() => {
   if (!submit.value) {
-    return '';
+    return "";
   }
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email.value)) {
-    return 'Invalid email format';
+    return "Invalid email format";
   }
-  return '';
+  return "";
 });
 
 const passwordError = computed(() => {
@@ -125,9 +144,9 @@ const passwordError = computed(() => {
   }
 
   if (!password.value) {
-    return 'Password is required';
+    return "Password is required";
   }
-  return '';
+  return "";
 });
 
 const allInputRequired = computed(() => {
@@ -142,41 +161,38 @@ const handleLogin = () => {
   }
 
   postData({ login: email.value, password: password.value })
-    .then((response) => {
-      if (response == "Authentication successful !") {
-        loginMessage.value.message = 'Login successful!';
+    .then((): void => {
+      if (data.value == "Authentication successful !") {
+        loginMessage.value.message = "Login successful!";
         loginMessage.value.isSuccess = true;
 
         setTimeout(() => {
-          loginMessage.value.message = 'Redirecting in 1 second...';
-        }, 1000); 
+          loginMessage.value.message = "Redirecting in 1 second...";
+        }, 1000);
 
         setTimeout(() => {
           const router = useRouter();
-          router.push(route.query.redirect as string || '/');
-        }, 2000); 
+          router.push((route.query.redirect as string) || "/");
+        }, 2000);
 
         return;
       }
 
-      if (response.message == "Invalid credentials") {
-        loginMessage.value.message = 'Invalid credentials. Please try again.';
+      if (error.value?.message == "Invalid credentials") {
+        loginMessage.value.message = "Invalid credentials. Please try again.";
       } else {
-        loginMessage.value.message = 'An unexpected error occurred. Please try again.';
+        loginMessage.value.message =
+          "An unexpected error occurred. Please try again.";
       }
 
       loginMessage.value.isSuccess = false;
     })
     .catch((error) => {
-      console.error('Login failed:', error);
-      loginMessage.value.message = 'Login failed. Please try again.';
+      console.error("Login failed:", error);
+      loginMessage.value.message = "Login failed. Please try again.";
       loginMessage.value.isSuccess = false;
     });
 };
-
-
-
 </script>
 
-<style>
-</style>
+<style></style>

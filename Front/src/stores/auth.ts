@@ -14,7 +14,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoggedIn = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.role?.name === RoleType.ADMIN);
 
-  const { fetchData: fetchUser, error: errorFetchingUser } =
+  const { fetch: fetchUser, data, error: errorFetchingUser } =
     useApi<User>("users/me");
 
   watch(errorFetchingUser, (newVal) => {
@@ -34,9 +34,9 @@ export const useAuthStore = defineStore("auth", () => {
         return null;
       }
 
-      const userData = await fetchUser();
-      user.value = userData;
-      return userData;
+      await fetchUser();
+      user.value = data.value;
+      return user.value;
     } catch (error) {
       console.error(
         "Erreur lors de la récupération des données utilisateur:",

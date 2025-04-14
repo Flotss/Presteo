@@ -62,9 +62,12 @@
       </form>
 
       <div v-else class="text-center">
-        <div class="bg-green-100 text-green-700 p-4 rounded-lg mb-4 flex items-center">
+        <div
+          class="bg-green-100 text-green-700 p-4 rounded-lg mb-4 flex items-center"
+        >
           <font-awesome-icon :icon="['fas', 'envelope']" class="mr-2" />
-          A reset link has been sent to your email address if it exists in our system.
+          A reset link has been sent to your email address if it exists in our
+          system.
         </div>
         <p class="text-gray-600 mb-4">
           Check your inbox and follow the instructions to reset your password.
@@ -89,7 +92,7 @@ const statusMessage = ref({
   isSuccess: false,
 });
 
-const { fetchData, loading, error } = useApi("auth/forgot-password");
+const { fetch: fetchData, loading } = useApi("auth/forgot-password");
 
 const emailError = computed(() => {
   if (!submitted.value) return "";

@@ -70,10 +70,7 @@
           v-model="birthDate"
           :submit="submit"
         />
-        <PasswordField
-          :submit="submit"
-          v-model="password"
-        />
+        <PasswordField :submit="submit" v-model="password" />
         <FormInput
           id="confirmPassword"
           label="Confirm Password"
@@ -87,16 +84,15 @@
           class="w-full bg-blue-600 text-white rounded py-2 transition duration-150"
           :class="{
             'bg-green-400': signUpMessage.isSuccess && !loading,
-            'bg-blue-600 hover:bg-blue-700': allInputRequired && !signUpMessage.isSuccess,
-            'bg-gray-400 cursor-not-allowed': !allInputRequired && !signUpMessage.isSuccess,
+            'bg-blue-600 hover:bg-blue-700':
+              allInputRequired && !signUpMessage.isSuccess,
+            'bg-gray-400 cursor-not-allowed':
+              !allInputRequired && !signUpMessage.isSuccess,
           }"
           :disabled="loading"
         >
           <span v-if="loading" class="flex justify-center items-center">
-            <font-awesome-icon
-              :icon="['fas', 'circle-notch']"
-              spin
-            />
+            <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
           </span>
           <span
             v-else-if="signUpMessage.isSuccess"
@@ -185,7 +181,7 @@ const handleSignUp = () => {
   sendSignUp();
 };
 
-const { loading, postData } = useApi("auth/signup");
+const { loading, data, error, post: postData } = useApi("auth/signup");
 
 const sendSignUp = async () => {
   const response = await postData({
@@ -198,7 +194,7 @@ const sendSignUp = async () => {
     birthDate: birthDate.value.content,
     phoneNumber: phoneNumber.value.content,
   });
-  if (response == 'User registered successfully!') {
+  if (data.value == "User registered successfully!") {
     signUpMessage.value.message = "Sign up successful!";
     signUpMessage.value.isSuccess = true;
 
@@ -211,8 +207,8 @@ const sendSignUp = async () => {
       router.push("/login");
     }, 2000);
   } else {
-    console.error("Sign up failed:", response);
-    signUpMessage.value.message = `Sign up failed, please try again. ${response.error}`;
+    console.error("Sign up failed:", response, error.value);
+    signUpMessage.value.message = `Sign up failed, please try again. ${error.value.error}`;
     signUpMessage.value.isSuccess = false;
   }
 };
