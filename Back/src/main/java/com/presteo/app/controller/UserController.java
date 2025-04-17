@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@SecuredRoute
 public class UserController {
 
     private final UserService userService;
@@ -35,7 +37,7 @@ public class UserController {
     }
 
 
-    @SecuredRoute
+
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getUserFromToken(HttpServletRequest request) {
         String username = request.getUserPrincipal().getName();
@@ -46,7 +48,6 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @SecuredRoute
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(
             @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
@@ -57,7 +58,6 @@ public class UserController {
     }
 
     @CheckCredential
-    @SecuredRoute
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @Parameter(description = "ID of the user to update") @PathVariable Long id,
@@ -69,12 +69,21 @@ public class UserController {
     }
 
     @CheckCredential
-    @SecuredRoute
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "ID of the user to delete") @PathVariable Long id) {
-//        return ResponseEntity.ok().build();
         return userService.deleteUser(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+
+    @CheckCredential
+    @PostMapping("/update-profile-picture")
+    public ResponseEntity<Void> updateProfilePicture(
+            @Parameter(description = "ID of the user to update") @RequestParam Long id,
+            @Parameter(description = "New profile picture") @RequestParam("file") MultipartFile file) {
+        return userService.updateProfilePicture(id, file)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }

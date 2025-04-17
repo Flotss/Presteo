@@ -25,6 +25,7 @@ public class UserDTO {
     private String phoneNumber;
     private Role role;
     private String description;
+    private String experience;
 
     public static UserDTO build(User user) {
         return builder()
@@ -38,6 +39,7 @@ public class UserDTO {
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .description(user.getDescription() != null ? user.getDescription().getDescription() : "")
+                .experience(user.getProviderInformation() != null ? user.getProviderInformation().getExperience() : "")
                 .build();
     }
 }

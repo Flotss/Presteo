@@ -39,6 +39,7 @@ out/
 !.env.example
 application.properties
 !application.properties.example
+presteo-service-account.json
 
 ### Logs ###
 logs/
