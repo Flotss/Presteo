@@ -1,18 +1,19 @@
 package com.presteo.app.service;
 
+import com.google.cloud.storage.StorageException;
 import com.presteo.app.dto.UserDTO;
-import com.presteo.app.model.Role;
-import com.presteo.app.model.RoleType;
-import com.presteo.app.model.User;
-import com.presteo.app.model.UserDescription;
+import com.presteo.app.model.*;
 import com.presteo.app.repository.RoleRepository;
 import com.presteo.app.repository.UserDescriptionRepository;
+import com.presteo.app.repository.UserProviderInformationRepository;
 import com.presteo.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -23,13 +24,17 @@ public class UserService {
     private RoleRepository roleRepository;
     private UserRepository userRepository;
     private UserDescriptionRepository userDescriptionRepository;
+    private UserProviderInformationRepository userProviderInformationRepository;
+    private ImageStorageService imageStorageService;
 
     @Autowired
-    public UserService(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository, UserDescriptionRepository userDescriptionRepository) {
+    public UserService(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository, UserDescriptionRepository userDescriptionRepository, UserProviderInformationRepository userProviderInformationRepository, ImageStorageService imageStorageService) {
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.userDescriptionRepository = userDescriptionRepository;
+        this.userProviderInformationRepository = userProviderInformationRepository;
+        this.imageStorageService = imageStorageService;
     }
 
 
@@ -66,6 +71,18 @@ public class UserService {
                 });
             }
 
+            if (userDetails.getExperience() != null) {
+                userProviderInformationRepository.findByUser(existingUser).ifPresentOrElse(providerInformation -> {
+                    providerInformation.setExperience(userDetails.getExperience());
+                    userProviderInformationRepository.save(providerInformation);
+                }, () -> {
+                    ProviderInformation newDescription = new ProviderInformation();
+                    newDescription.setUser(existingUser);
+                    newDescription.setExperience(userDetails.getExperience());
+                    userProviderInformationRepository.save(newDescription);
+                });
+            }
+
             return userRepository.save(existingUser);
         });
     }
@@ -73,6 +90,20 @@ public class UserService {
     public boolean deleteUser(Long id) {
         return userRepository.findById(id).map(user -> {
             userRepository.delete(user);
+            return true;
+        }).orElse(false);
+    }
+
+    public boolean updateProfilePicture(Long id, MultipartFile file) {
+        return userRepository.findById(id).map(user -> {
+            String url;
+            try {
+                url = imageStorageService.uploadUserProfileImage(file);
+            } catch (IOException | StorageException e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
+            user.setProfileImageUrl(url);
+            userRepository.save(user);
             return true;
         }).orElse(false);
     }
