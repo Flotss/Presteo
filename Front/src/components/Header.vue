@@ -142,8 +142,8 @@ watch(routePath, () => {
 const routes = [
   {
     name: "Service",
-    path: "/service",
-    isActualPage: computed(() => routePath.value === "/service"),
+    path: "/services",
+    isActualPage: computed(() => routePath.value === "/services"),
   },
   {
     name: "How it Works",

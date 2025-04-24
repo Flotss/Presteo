@@ -84,7 +84,6 @@ const hasLowercase = createRequirement(/[a-z]/, 'Password must contain at least 
 const hasNumber = createRequirement(/[0-9]/, 'Password must contain at least one number');
 const hasSpecial = createRequirement(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character');
 
-
 const passwordRequirements = computed(() => {
   const requirements = {
     length: passwordLength.value,

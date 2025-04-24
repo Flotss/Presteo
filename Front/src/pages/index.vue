@@ -10,9 +10,9 @@
                         Connect with verified service providers for all your home maintenance needs. Book appointments, track services, and pay securely - all in one platform.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-700 transition-all">
+                        <NuxtLink to="/services" class="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-700 transition-all">
                             Find a Provider Now
-                        </button>
+                        </NuxtLink>
                         <button class="bg-gray-100 text-gray-700 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-200 transition-all">
                             Learn More
                         </button>

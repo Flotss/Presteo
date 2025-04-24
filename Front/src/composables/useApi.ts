@@ -54,7 +54,7 @@ export function useApi<T>(endpoint: string, loadingState?: boolean) {
     try {
       const response = await fetch(url, options);
       const result = await parseResponse(response);
-
+  
       if (!response.ok) {
         error.value = result;
         data.value = null;
@@ -69,7 +69,7 @@ export function useApi<T>(endpoint: string, loadingState?: boolean) {
       error.value = err;
       data.value = null;
       envLogger.error(`Exception ${method} on ${endpoint}:`, err);
-      return { error: err, result: null };
+      return { error: err };
     } finally {
       loading.value = false;
     }
