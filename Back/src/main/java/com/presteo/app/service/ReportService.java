@@ -26,9 +26,7 @@ public class ReportService {
     }
 
     public List<Report> getReportByUserId(Long id) {
-        return userRepository.findById(id)
-                .map(reportsRepository::findByUserReported)
-                .orElse(List.of());
+        return reportsRepository.findByUserReported_Id(id);
     }
 
     public Report createReport(CreateReport createReport) {

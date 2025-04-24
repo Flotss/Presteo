@@ -1,6 +1,7 @@
 package com.presteo.app.controller;
 
 import com.presteo.app.controller.model.CreateReport;
+import com.presteo.app.dto.ReportDTO;
 import com.presteo.app.model.Report;
 import com.presteo.app.security.annotation.SecuredRoute;
 import com.presteo.app.service.ReportService;
@@ -25,9 +26,12 @@ public class ReportController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Report>> getReportsByReportedUserId(@PathVariable Long userId) {
-        List<Report> reports = reportService.getReportByUserId(userId);
-        return ResponseEntity.ok(reports);
+    public ResponseEntity<List<ReportDTO>> getReportsByReportedUserId(@PathVariable Long userId) {
+        List<ReportDTO> reportDTOs = reportService.getReportByUserId(userId)
+                .stream()
+                .map(ReportDTO::build)
+                .toList();
+        return ResponseEntity.ok(reportDTOs);
     }
 
     @PostMapping("/create")

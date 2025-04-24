@@ -2,7 +2,6 @@ package com.presteo.app.config;
 
 import com.presteo.app.model.Role;
 import com.presteo.app.model.RoleType;
-import com.presteo.app.repository.PasswordResetTokensRepository;
 import com.presteo.app.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

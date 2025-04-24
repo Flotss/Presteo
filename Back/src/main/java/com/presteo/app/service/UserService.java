@@ -7,6 +7,7 @@ import com.presteo.app.repository.RoleRepository;
 import com.presteo.app.repository.UserDescriptionRepository;
 import com.presteo.app.repository.UserProviderInformationRepository;
 import com.presteo.app.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -94,7 +95,7 @@ public class UserService {
         }).orElse(false);
     }
 
-    public boolean updateProfilePicture(Long id, MultipartFile file) {
+    public User updateProfilePicture(Long id, MultipartFile file) {
         return userRepository.findById(id).map(user -> {
             String url;
             try {
@@ -104,7 +105,7 @@ public class UserService {
             }
             user.setProfileImageUrl(url);
             userRepository.save(user);
-            return true;
-        }).orElse(false);
+            return user;
+        }).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 }
