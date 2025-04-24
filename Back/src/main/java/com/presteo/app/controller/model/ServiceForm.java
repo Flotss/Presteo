@@ -21,5 +21,5 @@ public class ServiceForm {
     @NotNull
     private Double price;
 
-    private MultipartFile file;
+    private MultipartFile imageFile;
 }

@@ -7,6 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.function.Function;
+
 public class SecurityUtils {
 
     public static CustomUserDetails getAuthenticatedUser() {
@@ -19,24 +21,43 @@ public class SecurityUtils {
         return (CustomUserDetails) authentication.getPrincipal();
     }
 
-    public static void checkUserRole(CustomUserDetails userDetails, RoleType[] roles) {
+    public static boolean checkUserRole(CustomUserDetails userDetails, RoleType[] roles) {
         if (roles.length == 0) {
-            return;
+            return true;
         }
 
-        boolean hasRequiredRole = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> {
-                    String userRole = authority.getAuthority();
-                    for (RoleType role : roles) {
-                        if (userRole.equals("ROLE_" + role.name())) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
+        boolean hasRequiredRole = hasRole(userDetails, roles);
 
         if (!hasRequiredRole) {
             throw new AccessDeniedException(SecurityConstants.ACCESS_DENIED_MESSAGE);
         }
+
+        return true;
+    }
+
+    public static <T> void verifyOwnershipOrAdmin(Function<T, Long> getUserId, T model) {
+        CustomUserDetails userDetails = getAuthenticatedUser();
+
+        if (hasRole(userDetails, RoleType.ADMIN)) {
+            return;
+        }
+
+        if (userDetails.getId() != getUserId.apply(model)) {
+            throw new AccessDeniedException(SecurityConstants.CANNOT_CREATE_OR_UPDATE_FOR_OTHERS_MESSAGE);
+        }
+    }
+
+    private static boolean hasRole(CustomUserDetails userDetails, RoleType role) {
+        return userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + role.name()));
+    }
+
+    private static boolean hasRole(CustomUserDetails userDetails, RoleType[] roles) {
+        for (RoleType role : roles) {
+            if (hasRole(userDetails, role)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

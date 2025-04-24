@@ -37,7 +37,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getUserFromToken(HttpServletRequest request) {
         String username = request.getUserPrincipal().getName();
@@ -77,14 +76,12 @@ public class UserController {
                 : ResponseEntity.notFound().build();
     }
 
-
     @CheckCredential
     @PostMapping("/update-profile-picture")
-    public ResponseEntity<Void> updateProfilePicture(
+    public ResponseEntity<UserDTO> updateProfilePicture(
             @Parameter(description = "ID of the user to update") @RequestParam Long id,
             @Parameter(description = "New profile picture") @RequestParam("file") MultipartFile file) {
-        return userService.updateProfilePicture(id, file)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        var userUpdated = userService.updateProfilePicture(id, file);
+        return ResponseEntity.ok(UserDTO.build(userUpdated));
     }
 }

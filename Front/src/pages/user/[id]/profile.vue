@@ -69,6 +69,25 @@
             </div>
           </template>
         </InfoRow>
+        <InfoRow
+          v-if="user.isProvider()"
+          label="Experience"
+          :value="user.providerInformation?.experience.substring(0, 20) + '...'"
+          :action="true"
+        >
+          <template #form>
+            <div class="space-y-4">
+              <BasicInput
+                v-if="canModify"
+                label="Experience"
+                v-model="tempUser.providerInformation.experience"
+                placeholder="Enter experience"
+                id="experience"
+              />
+              <UnauthorizedInfo v-else />
+            </div>
+          </template>
+        </InfoRow>
         <InfoRow label="Birth Date" :value="user.birthDate" :action="true">
           <template #form>
             <div class="space-y-4">

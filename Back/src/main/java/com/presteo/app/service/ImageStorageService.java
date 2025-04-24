@@ -39,7 +39,7 @@ public class ImageStorageService {
     }
 
 
-    private  String uploadImage(@NotNull MultipartFile file, String path) throws IOException {
+    private String uploadImage(@NotNull MultipartFile file, String path) throws IOException {
         String filename = String.format("%s/%s", path, UUID.randomUUID());
         BlobId blobId = BlobId.of(bucketName, filename);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)

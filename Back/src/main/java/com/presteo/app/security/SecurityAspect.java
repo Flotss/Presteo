@@ -15,6 +15,10 @@ public class SecurityAspect {
 
     @Before("@annotation(securedRoute)")
     public void checkSecurity(SecuredRoute securedRoute) {
+        if (securedRoute.disableSecurity()) {
+            return;
+        }
+
         CustomUserDetails userDetails = SecurityUtils.getAuthenticatedUser();
         checkUserRole(userDetails, securedRoute.roles());
     }

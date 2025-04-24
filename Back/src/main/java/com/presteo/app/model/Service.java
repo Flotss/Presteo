@@ -1,8 +1,5 @@
 package com.presteo.app.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,11 +17,9 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "provider_id", referencedColumnName = "id")
     @NotNull
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private User provider;
 
     @Column(nullable = false)
@@ -39,8 +34,7 @@ public class Service {
     @NotNull
     private String domain;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column()
     private String imageUrl;
 
     @Column(nullable = false)
