@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class SecurityUtils {
@@ -26,6 +27,10 @@ public class SecurityUtils {
             return true;
         }
 
+        if (hasRole(userDetails, RoleType.ADMIN)) {
+            return true;
+        }
+
         boolean hasRequiredRole = hasRole(userDetails, roles);
 
         if (!hasRequiredRole) {
@@ -35,14 +40,15 @@ public class SecurityUtils {
         return true;
     }
 
-    public static <T> void verifyOwnershipOrAdmin(Function<T, Long> getUserId, T model) {
+    public static <T> void verifyOwnershipOrAdmin(T model , Function<T, Long>... getUserId ) {
         CustomUserDetails userDetails = getAuthenticatedUser();
 
         if (hasRole(userDetails, RoleType.ADMIN)) {
             return;
         }
 
-        if (userDetails.getId() != getUserId.apply(model)) {
+        boolean isNotAccepted =  Arrays.stream(getUserId).allMatch(function -> function.apply(model) != userDetails.getId());
+        if (isNotAccepted) {
             throw new AccessDeniedException(SecurityConstants.CANNOT_CREATE_OR_UPDATE_FOR_OTHERS_MESSAGE);
         }
     }

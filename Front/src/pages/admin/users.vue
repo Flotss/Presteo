@@ -125,7 +125,6 @@ const authStore = useAuthStore();
 
 const fetchUsers = async () => {
   try {
-    debugger
     await fetch();
 
     if (error.value) {

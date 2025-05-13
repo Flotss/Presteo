@@ -1,237 +1,77 @@
 <template>
-  <div class="user-profile-container max-w-4xl mx-auto p-4">
-    <ProfileStatusMessages
-      :loading="loading"
-      :user="user"
-      :errorMessage="errorMessage"
-      :infoMessage="infoMessage"
-      :notFound="notFound"
+  <div class="flex min-h-screen bg-gray-50">
+    <!-- Left Navigation -->
+    <ProfileNavigation
+      v-model:active-section="activeSection"
+      :is-provider-or-admin="isProviderOrAdmin"
     />
 
-    <div v-if="user && tempUser" class="profile-content">
-      <ProfileHeader
-        ref="profileHeader"
+    <!-- Main Content -->
+    <div class="flex-1 p-8">
+      <ProfileStatusMessages
+        :loading="loading"
         :user="user"
-        :isUserLoggedIn="isUserLoggedFetched"
-        @update:description="tempUser.description = $event"
+        :error-message="errorMessage"
+        :info-message="infoMessage"
+        :not-found="notFound"
       />
 
-      <SaveActionButtons
-        v-if="hasChanges || saved"
-        :loading="loadingUpdate"
+      <ProfileContent
+        :active-section="activeSection"
+        :user="user"
+        :temp-user="tempUser"
+        :is-own-profile="isOwnProfile"
+        :is-user-logged-fetched="isUserLoggedFetched"
+        :has-changes="hasChanges"
         :saved="saved"
+        :loading-update="loadingUpdate"
+        :can-modify="canModify"
+        :user-id="userId"
+        :loading-delete="loadingDelete"
+        @update:description="tempUser.description = $event"
         @save="save"
         @reset="resetAllFields"
+        @delete-account="deleteAccount"
       />
 
-      <ProfileInfoCard
-        title="General Information"
-        subtitle="Basic details about your account"
-      >
-        <InfoRow
-          label="Name"
-          :value="`${user.firstName} ${user.lastName}`"
-          :action="true"
-        >
-          <template #form>
-            <div class="space-y-4">
-              <div class="flex space-x-4" v-if="canModify">
-                <BasicInput
-                  label="First Name"
-                  v-model="tempUser.firstName"
-                  placeholder="Enter first name"
-                  id="firstName"
-                  class="flex-1"
-                />
-                <BasicInput
-                  label="Last Name"
-                  v-model="tempUser.lastName"
-                  placeholder="Enter last name"
-                  id="lastName"
-                  class="flex-1"
-                />
-              </div>
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-        <InfoRow label="Username" :value="user.username" :action="true">
-          <template #form>
-            <div class="space-y-4">
-              <BasicInput
-                v-if="canModify"
-                label="Username"
-                v-model="tempUser.username"
-                placeholder="Enter username"
-                id="username"
-              />
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-        <InfoRow
-          v-if="user.isProvider()"
-          label="Experience"
-          :value="user.providerInformation?.experience.substring(0, 20) + '...'"
-          :action="true"
-        >
-          <template #form>
-            <div class="space-y-4">
-              <BasicInput
-                v-if="canModify"
-                label="Experience"
-                v-model="tempUser.providerInformation.experience"
-                placeholder="Enter experience"
-                id="experience"
-              />
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-        <InfoRow label="Birth Date" :value="user.birthDate" :action="true">
-          <template #form>
-            <div class="space-y-4">
-              <BasicInput
-                v-if="canModify"
-                label="Birth Date"
-                v-model="tempUser.birthDate"
-                type="date"
-                id="birthDate"
-              />
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-        <InfoRow
-          label="Type of account"
-          :value="user.role?.name"
-          :badge="true"
-        />
-      </ProfileInfoCard>
+      <!-- Services Section -->
+      <ProfileServices
+        v-if="activeSection === 'services' && isProviderOrAdmin"
+        :services="services"
+        :loading="loadingServices"
+        @create-service="createNewService"
+        @edit-service="editService"
+        @delete-service="deleteService"
+      />
 
-      <ProfileInfoCard
-        title="Contact Information"
-        subtitle="Your contact details"
-      >
-        <InfoRow
-          label="Email Address"
-          icon="fa-solid fa-envelope"
-          :value="user.email"
-          :action="true"
-        >
-          <template #form>
-            <div class="space-y-4">
-              <BasicInput
-                v-if="canModify"
-                label="Email Address"
-                v-model="tempUser.email"
-                type="email"
-                placeholder="Enter email address"
-                id="email"
-                format="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
-                formatError="Fomat should be like jean.dupont@domain.com"
-              />
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-        <InfoRow
-          label="Phone number"
-          icon="fa-solid fa-phone"
-          :value="user.phoneNumber"
-          action
-        >
-          <template #form>
-            <div class="space-y-4">
-              <BasicInput
-                v-if="canModify"
-                label="Phone Number"
-                v-model="tempUser.phoneNumber"
-                type="tel"
-                placeholder="Enter phone number"
-                id="phoneNumber"
-                format="^[0-9]{10}$"
-                formatError="Format should be like 0612345678"
-              />
-              <UnauthorizedInfo v-else />
-            </div>
-          </template>
-        </InfoRow>
-      </ProfileInfoCard>
-
-      <ProfileInfoCard
-        title="Security Settings"
-        subtitle="Manage your security settings"
-        v-if="canModify"
-      >
-        <InfoRow
-          label="Password"
-          icon="fa-solid fa-lock"
-          value="••••••••"
-          action
-          badge
-          badgeClasses="bg-red-100 text-red-800 rounded-md"
-        >
-          <template #form>
-            <div class="flex justify-between items-center">
-              <p class="text-sm text-gray-500">
-                To change your password, please click on the link on the right.
-              </p>
-              <div class="flex">
-                <NuxtLink
-                  :to="`/user/${userId}/change-password`"
-                  class="text-blue-600 flex items-center space-x-1 border px-2 py-1 rounded-lg border-blue-600 hover:bg-blue-50 font-medium"
-                >
-                  <span>Change Password</span>
-                  <font-awesome-icon icon="fa-solid fa-external-link-alt" />
-                </NuxtLink>
-              </div>
-            </div>
-          </template>
-        </InfoRow>
-      </ProfileInfoCard>
-      <ProfileInfoCard
-        title="Account Settings"
-        subtitle="Manage your account preferences"
-        v-if="canModify"
-      >
-        <div class="flex justify-between items-center px-6 py-4">
-          <p class="text-sm text-gray-500">
-            Deleting your account is permanent and cannot be undone.
-          </p>
-          <div class="flex">
-            <button
-              @click="deleteAccount"
-              class="text-red-600 flex items-center space-x-1 border px-2 py-1 rounded-lg border-red-600 hover:bg-red-50 font-medium"
-              :disabled="loadingDelete"
-            >
-              <span>Delete Account</span>
-              <font-awesome-icon
-                v-if="!loadingDelete"
-                icon="fa-solid fa-trash"
-              />
-              <font-awesome-icon v-else icon="fa-solid fa-circle-notch" spin />
-            </button>
-          </div>
-        </div>
-      </ProfileInfoCard>
+      <!-- Bookings Section -->
+      <ProfileBookings
+        v-if="activeSection === 'bookings' && isProviderOrAdmin"
+        :bookings="providerBookings"
+        :loading="loadingBookings"
+        @update-status="updateBookingStatus"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, computed, onMounted } from "vue";
+import type { ProfileHeader } from "#components";
+import { RoleType } from "~/model/roleType";
+import type { User } from "~/model/user";
+import type { Service } from "~/model/service";
+import type { Booking } from "~/model/booking";
+
 definePageMeta({
   middleware: "auth",
 });
-
-import type { ProfileHeader } from "#components";
-import { User } from "~/model/user";
 
 const router = useRouter();
 const route = useRoute();
 const userId = ref<string>(route.params.id as string);
 const user = ref<User | null>(null);
-const tempUser = ref<Partial<Record<keyof User, any>>>();
+const tempUser = ref<User | null>(null);
 const profileHeader = ref<InstanceType<typeof ProfileHeader> | null>(null);
 const errorMessage = ref("");
 const infoMessage = ref("");
@@ -241,6 +81,20 @@ const confirmSave = ref(false);
 const saved = ref(false);
 const isOwnProfile = ref(false);
 
+// New state for navigation and sections
+const activeSection = ref("profile");
+const services = ref<Service[]>([]);
+const providerBookings = ref<Booking[]>([]);
+const loadingServices = ref(false);
+const loadingBookings = ref(false);
+
+const isProviderOrAdmin = computed(() => {
+  return (
+    user.value?.role?.name === RoleType.PROVIDER ||
+    user.value?.role?.name === RoleType.ADMIN
+  );
+});
+
 const canModify = computed(() => {
   return canUserModify(authStore.user, user.value);
 });
@@ -249,15 +103,15 @@ const isUserLoggedFetched = computed(() => {
   return authStore.user?.id === user.value?.id;
 });
 
-const validateField = (field: string, value: any) => {
+const validateField = (field: string, value: unknown) => {
   if (field === "email") {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value);
+    return emailRegex.test(value as string);
   } else if (field === "phoneNumber") {
     const phoneRegex = /^\+?[0-9]{10}$/;
-    return phoneRegex.test(value);
+    return phoneRegex.test(value as string);
   } else if (field === "birthDate") {
-    return !isNaN(Date.parse(value));
+    return !isNaN(Date.parse(value as string));
   }
   return true;
 };
@@ -265,24 +119,20 @@ const validateField = (field: string, value: any) => {
 const hasChanges = computed(() => {
   if (!user.value || !tempUser.value) return false;
 
-  return (
-    user.value &&
-    Object.keys(tempUser.value).some((key) => {
-      const tempValue = tempUser.value![key as keyof User];
-      const originalValue = user.value![key as keyof User];
+  return Object.keys(tempUser.value).some((key) => {
+    const tempValue = tempUser.value![key as keyof User];
+    const originalValue = user.value![key as keyof User];
 
-      if (!validateField(key, tempValue)) {
-        return false;
-      }
-      return tempValue !== originalValue;
-    })
-  );
+    if (!validateField(key, tempValue as unknown)) {
+      return false;
+    }
+    return tempValue !== originalValue;
+  });
 });
 
 const {
   fetch: fetchData,
   loading,
-  error,
   data,
 } = useApi<User>(`users/${userId.value}`, true);
 
@@ -316,7 +166,82 @@ const resetAllFields = () => {
   }
 };
 
-onMounted(() => {
+const fetchServices = async () => {
+  if (!isProviderOrAdmin.value) return;
+
+  loadingServices.value = true;
+  try {
+    const { fetch, data } = useApi<Service[]>(
+      `services/provider/${userId.value}`
+    );
+    await fetch();
+    if (data.value) {
+      services.value = data.value;
+    }
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    errorMessage.value = "Failed to fetch services";
+  } finally {
+    loadingServices.value = false;
+  }
+};
+
+const fetchProviderBookings = async () => {
+  if (!isProviderOrAdmin.value) return;
+
+  loadingBookings.value = true;
+  try {
+    const { fetch, data } = useApi<Booking[]>(
+      `bookings/provider/${userId.value}`
+    );
+    await fetch();
+    if (data.value) {
+      providerBookings.value = data.value;
+    }
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    errorMessage.value = "Failed to fetch bookings";
+  } finally {
+    loadingBookings.value = false;
+  }
+};
+
+const updateBookingStatus = async (booking: Booking) => {
+  try {
+    const { put } = useApi<Booking>(`bookings/${booking.id}`);
+    await put({ status: booking.status });
+    infoMessage.value = "Booking status updated successfully";
+  } catch (error) {
+    console.error("Error updating booking status:", error);
+    errorMessage.value = "Failed to update booking status";
+    // Revert the status change in the UI
+    await fetchProviderBookings();
+  }
+};
+
+const createNewService = () => {
+  router.push("/services/new");
+};
+
+const editService = (service: Service) => {
+  router.push(`/services/${service.id}/edit`);
+};
+
+const deleteService = async (service: Service) => {
+  if (!confirm("Are you sure you want to delete this service?")) return;
+
+  try {
+    const { delete: deleteService } = useApi<Service>(`services/${service.id}`);
+    await deleteService();
+    await fetchServices();
+    infoMessage.value = "Service deleted successfully";
+  } catch (error) {
+    console.error("Error deleting service:", error);
+    errorMessage.value = "Failed to delete service";
+  }
+};
+
+onMounted(async () => {
   if (!userId.value) {
     errorMessage.value = "User ID is not provided";
     setTimeout(() => {
@@ -341,10 +266,15 @@ onMounted(() => {
     user.value = authStore.user;
     initTempUser();
     errorMessage.value = "";
-    infoMessage.value = "You are viewing your own profile.";
+    infoMessage.value = "";
     loading.value = false;
   } else {
-    fetchUser();
+    await fetchUser();
+  }
+
+  if (isProviderOrAdmin.value) {
+    await fetchServices();
+    await fetchProviderBookings();
   }
 });
 
@@ -398,9 +328,10 @@ const save = () => {
     });
 };
 
-const { loading: loadingDelete, delete: deleteUser, data: dataDelete, error: errorDelete } = useApi<User>(
+const { loading: loadingDelete, delete: deleteUser } = useApi<User>(
   `users/${userId.value}`
 );
+
 const deleteAccount = () => {
   const confirmDelete = confirm(
     "Are you sure you want to delete your account? This action cannot be undone."
