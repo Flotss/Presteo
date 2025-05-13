@@ -17,6 +17,8 @@ public class ServiceDTO {
     private UserDTO provider;
     private String title;
     private String description;
+    private int durationHours;
+    private String city;
     private String domain;
     private String imageUrl;
     private Double price;
@@ -30,6 +32,8 @@ public class ServiceDTO {
                 .provider(UserDTO.build(service.getProvider()))
                 .title(service.getTitle())
                 .description(service.getDescription())
+                .durationHours(service.getDurationHours())
+                .city(service.getCity())
                 .domain(service.getDomain())
                 .imageUrl(service.getImageUrl())
                 .price(service.getPrice())

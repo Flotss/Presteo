@@ -1,4 +1,4 @@
-import { library, config } from "@fortawesome/fontawesome-svg-core";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   faGithub,
@@ -28,6 +28,24 @@ import {
   faUserSlash,
   faTimes,
   faPenToSquare,
+  faClock,
+  faEuroSign,
+  faCalendar,
+  faCalendarDay,
+  faInfoCircle,
+  faSun,
+  faMoon,
+  faUserTie,
+  faStarHalfAlt,
+  faBriefcase,
+  faHouseUser,
+  faTools,
+  faMapMarkedAlt,
+  faList,
+  faCalendarPlus,
+  faPlus,
+  faCalendarTimes,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -55,7 +73,25 @@ library.add(
   faRightFromBracket,
   faExternalLinkAlt,
   faTimes,
-  faPenToSquare
+  faPenToSquare,
+  faClock,
+  faEuroSign,
+  faCalendar,
+  faCalendarDay,
+  faInfoCircle,
+  faSun,
+  faMoon,
+  faUserTie,
+  faStarHalfAlt,
+  faBriefcase,
+  faHouseUser,
+  faTools,
+  faMapMarkedAlt,
+  faList,
+  faCalendarPlus,
+  faPlus,
+  faCalendarTimes,
+  faHistory
 );
 
 export default defineNuxtPlugin((nuxtApp) => {

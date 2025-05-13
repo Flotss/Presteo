@@ -34,6 +34,14 @@ public class Service {
     @NotNull
     private String domain;
 
+    @Column(nullable = false)
+    @NotNull
+    private String city;
+
+    @Column(nullable = false)
+    @NotNull
+    private int durationHours;
+
     @Column()
     private String imageUrl;
 

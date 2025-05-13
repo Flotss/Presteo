@@ -1,31 +1,34 @@
 import type { ProviderInformation } from "./providerInformation";
 import type { Role } from "./role";
 import type { UserDescription } from "./roleDescription";
-import { RoleType } from "./roleType";
+import type { RoleType } from "./roleType";
 
-export class User {
-  id!: number;
-  username!: string;
-  lastName!: string;
-  firstName!: string;
-  address!: string;
-  birthDate!: string;
-  phoneNumber!: string;
-  email!: string;
-  role?: Role;
-  description?: UserDescription;
+export interface User {
+  id: number;
+  username: string;
+  lastName: string;
+  firstName: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  birthDate: string;
+  phoneNumber: string;
+  email: string;
+  role?: {
+    id?: number;
+    name?: RoleType;
+  };
+  description?: {
+    id?: number;
+    content?: string;
+  };
+  providerInformation?: {
+    id?: number;
+    experience?: string;
+  };
   createdAt?: Date;
   updatedAt?: Date;
-  providerInformation?: ProviderInformation;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
 }
-
-
-declare module "./user" {
-  interface User {
-    isProvider(): boolean;
-  }
-}
-
-User.prototype.isProvider = function (): boolean {
-  return this.role?.name === RoleType.PROVIDER;
-};

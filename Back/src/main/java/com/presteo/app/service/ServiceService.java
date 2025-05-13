@@ -75,7 +75,7 @@ public class ServiceService {
         serviceRepository.deleteById(id);
     }
 
-    public boolean updateServicePicture(Long id, MultipartFile file) {
+    public Service updateServicePicture(Long id, MultipartFile file) {
         return serviceRepository.findById(id).map(service -> {
             String url;
             try {
@@ -85,7 +85,7 @@ public class ServiceService {
             }
             service.setImageUrl(url);
             serviceRepository.save(service);
-            return true;
-        }).orElse(false);
+            return service;
+        }).orElseThrow(() -> new EntityNotFoundException("Service not found"));
     }
 }

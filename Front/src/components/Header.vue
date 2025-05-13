@@ -10,11 +10,17 @@
         <div class="hidden md:flex justify-evenly items-center w-full">
           <nav class="space-x-8 items-center">
             <span
-              v-for="route in routes"
-              :key="route.name"
+              v-for="navItem in routes"
+              v-show="
+                (!navItem.showWhenLoggedIn && !navItem.showWhenAdmin) ||
+                (navItem.showWhenLoggedIn && authStore.isLoggedIn) ||
+                (navItem.showWhenAdmin &&
+                  authStore.user?.role?.name === 'ADMIN')
+              "
+              :key="navItem.name"
               class="text-gray-600 hover:text-blue-600 transition duration-150"
             >
-              <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
+              <NuxtLink :to="navItem.path">{{ navItem.name }}</NuxtLink>
             </span>
           </nav>
         </div>
@@ -24,7 +30,10 @@
             v-if="!isLoginPage && !authStore.isLoggedIn"
             to="/login"
             class="hidden md:block text-gray-600 hover:text-blue-600 transition duration-150"
-            :class="{ 'bg-blue-600 text-white px-6 py-2 rounded-full hover:text-white hover:bg-blue-700': isSignUpPage }"
+            :class="{
+              'bg-blue-600 text-white px-6 py-2 rounded-full hover:text-white hover:bg-blue-700':
+                isSignUpPage,
+            }"
           >
             Login
           </NuxtLink>
@@ -59,21 +68,19 @@
           </button>
         </div>
       </div>
-      <TransitionOpen
-       :showContent="isMenuOpen"
-      >
+      <TransitionOpen :show-content="isMenuOpen">
         <div
           class="md:hidden mt-4 space-y-2 overflow-hidden hamburger-menu pb-2"
-        > 
+        >
           <span
-            v-for="(route, index) in routes"
-            :key="route.name"
+            v-for="(menuItem, index) in routes"
+            :key="menuItem.name"
             class="block text-gray-600 text-center hover:text-blue-600 transition duration-150 openAnimation"
-            :class="{ 'text-blue-600': route.isActualPage }"
+            :class="{ 'text-blue-600': menuItem.isActualPage }"
             :style="{ animationDelay: `${index * 0.1}s` }"
           >
-            <NuxtLink :to="route.path">{{ route.name }}</NuxtLink>
-            <div class="w-full h-0.5 bg-gray-200 my-2"></div>
+            <NuxtLink :to="menuItem.path">{{ menuItem.name }}</NuxtLink>
+            <div class="w-full h-0.5 bg-gray-200 my-2" />
           </span>
           <div
             v-if="!authStore.isLoggedIn"
@@ -124,6 +131,10 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
 
+defineOptions({
+  name: "AppHeader",
+});
+
 const isMenuOpen = ref(false);
 const authStore = useAuthStore();
 const toggleMenu = () => {
@@ -140,8 +151,14 @@ watch(routePath, () => {
 });
 
 const routes = [
+  // Public pages
   {
-    name: "Service",
+    name: "Home",
+    path: "/",
+    isActualPage: computed(() => routePath.value === "/"),
+  },
+  {
+    name: "Services",
     path: "/services",
     isActualPage: computed(() => routePath.value === "/services"),
   },
@@ -151,14 +168,23 @@ const routes = [
     isActualPage: computed(() => routePath.value === "/how-it-works"),
   },
   {
-    name: "Providers",
-    path: "/providers",
-    isActualPage: computed(() => routePath.value === "/providers"),
-  },
-  {
     name: "About Us",
     path: "/about-us",
     isActualPage: computed(() => routePath.value === "/about-us"),
+  },
+  // Logged in user pages
+  {
+    name: "My Bookings",
+    path: "/bookings/mybookings",
+    isActualPage: computed(() => routePath.value === "/bookings/mybookings"),
+    showWhenLoggedIn: true,
+  },
+  // Admin pages
+  {
+    name: "Admin Panel",
+    path: "/admin/users",
+    isActualPage: computed(() => routePath.value.startsWith("/admin")),
+    showWhenAdmin: true,
   },
 ];
 
