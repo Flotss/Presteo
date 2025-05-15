@@ -22,8 +22,8 @@ public class BookingDTO {
     private Date bookingDate;
     private Double finalPrice;
     private BookingStatusType status;
-    private String createdAt;
-    private String updatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 
     public static BookingDTO build(Booking booking) {
         return builder()
