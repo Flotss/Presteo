@@ -69,7 +69,6 @@ defineProps({
   },
 });
 
-import { useAuthStore } from "~/stores/auth";
 
 const authStore = useAuthStore();
 const imageLoaded = ref(false);

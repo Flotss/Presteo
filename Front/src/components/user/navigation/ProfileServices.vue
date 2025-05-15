@@ -4,7 +4,7 @@
       <h2 class="text-2xl font-semibold text-gray-800">My Services</h2>
       <button
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-        @click="$emit('create-service')"
+        @click="createNewService"
       >
         <font-awesome-icon :icon="['fas', 'plus']" class="mr-2" />
         Add New Service
@@ -83,7 +83,7 @@
         <div class="mt-4 flex justify-end space-x-2">
           <button
             class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
-            @click="$emit('edit-service', service)"
+            @click="editService(service)"
           >
             Edit
           </button>
@@ -102,13 +102,22 @@
 <script setup lang="ts">
 import type { Service } from "~/model/service";
 
+const router = useRouter();
+
 defineProps<{
   services: Service[];
   loading: boolean;
 }>();
 
 defineEmits<{
-  (e: "create-service"): void;
-  (e: "edit-service" | "delete-service", service: Service): void;
+  (e: "delete-service", service: Service): void;
 }>();
+
+const createNewService = () => {
+  router.push("/service/creation");
+};
+
+const editService = (service: Service) => {
+  router.push(`/services/${service.id}/edit`);
+};
 </script>

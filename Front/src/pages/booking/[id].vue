@@ -40,17 +40,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
 import type { Service } from "~/model/service";
-import { useAuthStore } from "~/stores/auth";
-import LoadingScreen from "~/components/booking/LoadingScreen.vue";
-import ServiceHeader from "~/components/booking/ServiceHeader.vue";
-import DateSelection from "~/components/booking/DateSelection.vue";
-import TimeSlotsGrid from "~/components/booking/TimeSlotsGrid.vue";
-import TimeSlotsSelect from "~/components/booking/TimeSlotsSelect.vue";
-import BookingModal from "~/components/booking/BookingModal.vue";
 import type { Booking } from "~/model/booking";
+
+useHead({
+  title: "Booking | Presteo",
+});
 
 interface TimeSlot {
   available: boolean;

@@ -100,6 +100,10 @@
 </template>
 
 <script lang="ts" setup>
+useHead({
+  title: "Login | Presteo",
+});
+
 const route = useRoute();
 const submit = ref(false);
 const email = ref("");

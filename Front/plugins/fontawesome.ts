@@ -46,6 +46,18 @@ import {
   faPlus,
   faCalendarTimes,
   faHistory,
+  faSearch,
+  faUserCheck,
+  faHeart,
+  faHandshake,
+  faLightbulb,
+  faCode,
+  faGraduationCap,
+  faUsers,
+  faCreditCard,
+  faShield,
+  faHeadset,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -91,7 +103,19 @@ library.add(
   faCalendarPlus,
   faPlus,
   faCalendarTimes,
-  faHistory
+  faHistory,
+  faSearch,
+  faUserCheck,
+  faHeart,
+  faHandshake,
+  faLightbulb,
+  faCode,
+  faGraduationCap,
+  faUsers,
+  faCreditCard,
+  faShield,
+  faHeadset,
+  faBars
 );
 
 export default defineNuxtPlugin((nuxtApp) => {

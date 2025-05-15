@@ -24,8 +24,6 @@
 </template>
 
 <script lang="ts" setup>
-import ProfileInfoCard from "~/components/user/ProfileInfoCard.vue";
-
 defineProps<{
   canModify: boolean;
   loadingDelete: boolean;

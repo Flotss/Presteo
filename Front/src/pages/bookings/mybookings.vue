@@ -165,9 +165,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
 import type { Booking } from "~/model/booking";
 import { BookingStatusType } from "~/model/booking";
+
+useHead({
+  title: "My Bookings | Presteo",
+});
 
 const bookings = ref<Booking[]>([]);
 const loading = ref(true);

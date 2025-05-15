@@ -44,7 +44,6 @@
 
 <script setup lang="ts">
 import type { Service } from "~/model/service";
-import ProviderInfo from "./ProviderInfo.vue";
 
 defineProps<{
   service: Service;

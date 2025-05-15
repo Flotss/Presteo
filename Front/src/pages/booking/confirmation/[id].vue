@@ -15,6 +15,10 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Booking } from '~/model/booking';
 
+useHead({
+  title: "Booking Confirmation | Presteo",
+});
+
 const route = useRoute();
 const booking = ref<Booking | null>(null);
 
