@@ -20,6 +20,7 @@ public class BookingDTO {
     private String additionalInfo;
     private String address;
     private Date bookingDate;
+    private Double finalPrice;
     private BookingStatusType status;
     private String createdAt;
     private String updatedAt;
@@ -32,6 +33,7 @@ public class BookingDTO {
                 .additionalInfo(booking.getAdditionalInfo())
                 .address(booking.getAddress())
                 .bookingDate(booking.getBookingDate())
+                .finalPrice(booking.getFinalPrice())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())

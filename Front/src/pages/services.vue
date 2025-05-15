@@ -13,7 +13,8 @@
         Services list
       </h1>
       <p class="text-lg text-center text-gray-600 mb-8">
-        Discover the available services and find the one which suits you the best :
+        Discover the available services and find the one which suits you the
+        best :
       </p>
 
       <!-- Search Bar -->
@@ -86,6 +87,10 @@
 </template>
 
 <script setup>
+useHead({
+  title: "Services | Presteo",
+});
+
 const services = ref([]);
 const searchQuery = ref("");
 const { loading, fetch, error, data } = useApi("services");

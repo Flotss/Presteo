@@ -117,13 +117,14 @@
           <div class="flex space-x-4">
             <!-- Social Media Icons -->
             <template v-for="icon in socialMediaIcons" :key="icon.label">
-              <a
-                :href="icon.link"
+              <NuxtLink
+                :to="icon.link"
+                target="_blank"
                 class="text-gray-600 hover:text-blue-600 transition duration-150"
                 :aria-label="icon.label"
               >
                 <font-awesome-icon class="text-xl" :icon="icon.icon" />
-              </a>
+              </NuxtLink>
             </template>
           </div>
         </div>
@@ -133,7 +134,9 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+defineOptions({
+  name: "AppFooter",
+});
 
 // Retrieve environment variables
 const env = useEnvironment();

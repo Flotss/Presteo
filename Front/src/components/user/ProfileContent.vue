@@ -14,14 +14,14 @@
       ref="profileHeader"
       :user="user"
       :is-user-logged-in="isUserLoggedFetched"
-      @update:description="tempUser.description = $event"
+      @update:description="emit('update:tempUser', { description: $event })"
     />
 
     <SaveActionButtons
       v-if="hasChanges || saved"
       :loading="loadingUpdate"
       :saved="saved"
-      @save="save"
+      @save="emit('save')"
       @reset="resetAllFields"
     />
 
@@ -29,13 +29,17 @@
       :user="user"
       :temp-user="tempUser"
       :can-modify="canModify"
-      @update:first-name="tempUser.firstName = $event"
-      @update:last-name="tempUser.lastName = $event"
-      @update:username="tempUser.username = $event"
-      @update:birth-date="tempUser.birthDate = $event"
+      @update:first-name="emit('update:tempUser', { firstName: $event })"
+      @update:last-name="emit('update:tempUser', { lastName: $event })"
+      @update:username="emit('update:tempUser', { username: $event })"
+      @update:birth-date="emit('update:tempUser', { birthDate: $event })"
       @update:experience="
-        tempUser.providerInformation &&
-          (tempUser.providerInformation.experience = $event)
+        emit('update:tempUser', {
+          providerInformation: {
+            ...tempUser.providerInformation,
+            experience: $event,
+          },
+        })
       "
     />
 
@@ -43,9 +47,9 @@
       :user="user"
       :temp-user="tempUser"
       :can-modify="canModify"
-      @update:email="tempUser.email = $event"
-      @update:phone-number="tempUser.phoneNumber = $event"
-      @update:address="tempUser.address = $event"
+      @update:email="emit('update:tempUser', { email: $event })"
+      @update:phone-number="emit('update:tempUser', { phoneNumber: $event })"
+      @update:address="emit('update:tempUser', { address: $event })"
     />
 
     <ProfileSecuritySettings
@@ -58,16 +62,16 @@
     <ProfileAccountSettings
       :can-modify="canModify"
       :loading-delete="loadingDelete"
-      @delete-account="deleteAccount"
+      @delete-account="emit('delete-account')"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { User } from "~/model/user";
 import type { ProfileHeader } from "#components";
+import type { User } from "~/model/user";
 
-const props = defineProps<{
+defineProps<{
   activeSection: string;
   user: User | null;
   tempUser: User | null;
@@ -83,9 +87,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "update:description", value: string): void;
-  (e: "save"): void;
-  (e: "reset"): void;
-  (e: "delete-account"): void;
+  (e: "update:tempUser", value: Partial<User>): void;
+  (e: "save" | "reset" | "delete-account"): void;
 }>();
 
 const profileHeader = ref<InstanceType<typeof ProfileHeader> | null>(null);

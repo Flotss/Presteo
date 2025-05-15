@@ -3,17 +3,32 @@
     <!-- Left Navigation -->
     <ProfileNavigation
       v-model:active-section="activeSection"
+      v-model:is-open="isNavOpen"
       :is-provider-or-admin="isProviderOrAdmin"
     />
 
     <!-- Main Content -->
-    <div class="flex-1 p-8">
+    <div class="flex-1 p-4 md:p-8">
+      <!-- Mobile Navigation Button -->
+      <button
+        class="md:hidden w-full bg-white text-gray-800 border border-gray-200 p-4 rounded-lg mb-4 flex items-center justify-between shadow-sm"
+        @click="isNavOpen = !isNavOpen"
+      >
+        <span class="font-medium">Profile Menu</span>
+        <font-awesome-icon
+          :icon="['fas', isNavOpen ? 'times' : 'bars']"
+          class="text-gray-600 text-xl"
+        />
+      </button>
+
       <ProfileStatusMessages
         :loading="loading"
         :user="user"
         :error-message="errorMessage"
         :info-message="infoMessage"
         :not-found="notFound"
+        @clear-error-message="errorMessage = ''"
+        @clear-info-message="infoMessage = ''"
       />
 
       <ProfileContent
@@ -28,7 +43,7 @@
         :can-modify="canModify"
         :user-id="userId"
         :loading-delete="loadingDelete"
-        @update:description="tempUser.description = $event"
+        @update:temp-user="handleTempUserUpdate($event)"
         @save="save"
         @reset="resetAllFields"
         @delete-account="deleteAccount"
@@ -39,8 +54,6 @@
         v-if="activeSection === 'services' && isProviderOrAdmin"
         :services="services"
         :loading="loadingServices"
-        @create-service="createNewService"
-        @edit-service="editService"
         @delete-service="deleteService"
       />
 
@@ -63,6 +76,10 @@ import type { User } from "~/model/user";
 import type { Service } from "~/model/service";
 import type { Booking } from "~/model/booking";
 
+useHead({
+  title: "User Profile | Presteo",
+});
+
 definePageMeta({
   middleware: "auth",
 });
@@ -80,6 +97,7 @@ const authStore = useAuthStore();
 const confirmSave = ref(false);
 const saved = ref(false);
 const isOwnProfile = ref(false);
+const isNavOpen = ref(false);
 
 // New state for navigation and sections
 const activeSection = ref("profile");
@@ -129,6 +147,10 @@ const hasChanges = computed(() => {
     return tempValue !== originalValue;
   });
 });
+
+const handleTempUserUpdate = (updatedUser: Partial<User>) => {
+  tempUser.value = { ...tempUser.value, ...updatedUser } as User;
+};
 
 const {
   fetch: fetchData,
@@ -186,7 +208,7 @@ const fetchServices = async () => {
   }
 };
 
-const fetchProviderBookings = async () => {
+const fetchBookings = async () => {
   if (!isProviderOrAdmin.value) return;
 
   loadingBookings.value = true;
@@ -207,24 +229,15 @@ const fetchProviderBookings = async () => {
 };
 
 const updateBookingStatus = async (booking: Booking) => {
-  try {
-    const { put } = useApi<Booking>(`bookings/${booking.id}`);
-    await put({ status: booking.status });
+  const { error, post } = useApi<Booking>(`bookings/${booking.id}/status`);
+  await post({ status: booking.status });
+
+  if (error.value) {
+    errorMessage.value = "Failed to update booking status " + error.value.error;
+    await fetchBookings();
+  } else {
     infoMessage.value = "Booking status updated successfully";
-  } catch (error) {
-    console.error("Error updating booking status:", error);
-    errorMessage.value = "Failed to update booking status";
-    // Revert the status change in the UI
-    await fetchProviderBookings();
   }
-};
-
-const createNewService = () => {
-  router.push("/services/new");
-};
-
-const editService = (service: Service) => {
-  router.push(`/services/${service.id}/edit`);
 };
 
 const deleteService = async (service: Service) => {
@@ -274,7 +287,7 @@ onMounted(async () => {
 
   if (isProviderOrAdmin.value) {
     await fetchServices();
-    await fetchProviderBookings();
+    await fetchBookings();
   }
 });
 

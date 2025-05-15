@@ -34,8 +34,6 @@
 
 <script lang="ts" setup>
 import type { User } from "~/model/user";
-import InfoRow from "~/components/user/InfoRow.vue";
-import ProfileInfoCard from "~/components/user/ProfileInfoCard.vue";
 
 defineProps<{
   user: User;

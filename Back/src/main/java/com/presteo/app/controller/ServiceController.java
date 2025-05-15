@@ -141,7 +141,7 @@ public class ServiceController {
         @ApiResponse(responseCode = "404", description = "Service not found")
     })
     @SecuredRoute(roles = {RoleType.PROVIDER})
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteService(
             @Parameter(description = "ID of the service to delete") 
             @PathVariable Long id) {

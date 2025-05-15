@@ -75,6 +75,7 @@ public class BookingService {
         booking.setAddress(createBooking.getAddress());
         booking.setBookingDate(createBooking.getBookingDate());
         booking.setStatus(BookingStatusType.PENDING);
+        booking.setFinalPrice(service.getPrice() * service.getDurationHours());
 
         Booking savedBooking = bookingRepository.save(booking);
 

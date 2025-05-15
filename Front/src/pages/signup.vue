@@ -136,6 +136,10 @@
   </div>
 </template>
 <script lang="ts" setup>
+useHead({
+  title: "Sign Up | Presteo",
+});
+
 const submit = ref(false);
 const email = ref({ content: "", isValid: false });
 const password = ref({ content: "", isValid: false });

@@ -84,6 +84,10 @@
 </template>
 
 <script lang="ts" setup>
+useHead({
+  title: "Forgot Password | Presteo",
+});
+
 const email = ref("");
 const submitted = ref(false);
 const requestSent = ref(false);

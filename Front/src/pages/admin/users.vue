@@ -116,6 +116,10 @@ definePageMeta({
   middleware: "auth",
 });
 
+useHead({
+  title: "Users List | Presteo",
+});
+
 const users = ref([]);
 const searchQuery = ref("");
 const roleFilter = ref("");

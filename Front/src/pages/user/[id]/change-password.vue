@@ -133,6 +133,10 @@
 </template>
 
 <script lang="ts" setup>
+useHead({
+  title: "Change Password | Presteo",
+});
+
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();

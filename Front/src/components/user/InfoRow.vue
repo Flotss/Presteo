@@ -1,21 +1,23 @@
 <template>
   <div>
     <div
-      class="info-row px-6 py-4 flex items-center justify-between"
+      class="info-row px-6 py-4 flex items-center justify-between overflow-clip"
       @click="action ? (isOpen = !isOpen) : null"
     >
       <div class="info-label flex items-center">
         <font-awesome-icon :icon="icon" class="mr-3 text-gray-400" />
-        <div class="font-medium text-gray-700">{{ label }}</div>
+        <div class="font-medium text-gray-700 text-ellipsis text-nowrap mr-5">
+          {{ label }}
+        </div>
       </div>
       <div class="info-value flex items-center">
-        <span v-if="!badge" class="text-gray-900">
+        <span v-if="!badge" class="text-gray-900 overflow-hidden text-ellipsis ">
           {{ value || "Not provided" }}
         </span>
 
         <span
           v-else
-          class="px-2 py-1 text-sm font-medium rounded-full"
+          class="px-2 py-1 text-sm font-medium rounded-full overflow-clip"
           :class="badgeClasses"
         >
           {{ value || "Not provided" }}

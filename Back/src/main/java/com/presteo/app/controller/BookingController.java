@@ -1,6 +1,7 @@
 package com.presteo.app.controller;
 
 import com.presteo.app.controller.model.CreateBooking;
+import com.presteo.app.controller.model.StatusUpdate;
 import com.presteo.app.dto.BookingDTO;
 import com.presteo.app.model.Booking;
 import com.presteo.app.model.BookingStatusType;
@@ -176,10 +177,10 @@ public class BookingController {
     public ResponseEntity<BookingDTO> updateBookingStatus(
             @Parameter(description = "ID of the booking to update") 
             @PathVariable Long id,
-            @Parameter(description = "New booking status") 
-            @RequestParam BookingStatusType status) {
+            @Parameter(description = "New booking status")
+            @RequestBody StatusUpdate statusUpdate) {
         try {
-            Booking booking = bookingService.updateBookingStatus(id, status);
+            Booking booking = bookingService.updateBookingStatus(id, BookingStatusType.fromName(statusUpdate.getStatus()));
             return ResponseEntity.ok(BookingDTO.build(booking));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

@@ -32,7 +32,10 @@
         class="bg-white rounded-lg shadow-md"
       >
         <div class="p-6">
-          <div class="flex justify-between items-start">
+          <div
+            class="flex justify-between items-start"
+            @click="toggleBookingDetails(booking.id)"
+          >
             <div>
               <h3 class="text-lg font-medium text-gray-900">
                 {{ booking.service.title }}
@@ -46,6 +49,7 @@
                 v-model="booking.status"
                 class="rounded-md border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500"
                 :class="getStatusClass(booking.status)"
+                @click.stop
                 @change="$emit('update-status', booking)"
               >
                 <option
@@ -56,10 +60,7 @@
                   {{ status }}
                 </option>
               </select>
-              <button
-                class="text-gray-400 hover:text-gray-600"
-                @click="toggleBookingDetails(booking.id)"
-              >
+              <div class="text-gray-400 hover:text-gray-600">
                 <font-awesome-icon
                   :icon="[
                     'fas',
@@ -68,7 +69,7 @@
                       : 'chevron-down',
                   ]"
                 />
-              </button>
+              </div>
             </div>
           </div>
 
@@ -156,7 +157,7 @@ const toggleBookingDetails = (bookingId: number) => {
 };
 
 const formatDate = (date: Date) => {
-  return new Date(date).toLocaleString("fr-FR", {
+  return new Date(date).toLocaleString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
