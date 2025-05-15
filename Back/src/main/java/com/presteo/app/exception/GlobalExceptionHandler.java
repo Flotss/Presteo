@@ -52,8 +52,11 @@ public class GlobalExceptionHandler {
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.put("message", "An unexpected error occurred");
-        response.put("error", ((ResponseStatusException) ex).getReason());
-
+        if (ex instanceof ResponseStatusException) {
+            response.put("error", ((ResponseStatusException) ex).getReason());
+        } else {
+            response.put("error", "Unknown error");
+        }
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
