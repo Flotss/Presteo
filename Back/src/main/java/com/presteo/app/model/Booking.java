@@ -42,9 +42,9 @@ public class Booking {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private String createdAt;
+    private Date createdAt;
 
     @Column(nullable = false)
     @UpdateTimestamp
-    private String updatedAt;
+    private Date updatedAt;
 }
