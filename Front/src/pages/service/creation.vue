@@ -38,7 +38,7 @@
           <FormInput
             id="price"
             label="Price"
-            type="price"
+            type="number"
             v-model="price"
             :submit="submit"
             :placeholder="'Enter the service price per hour'"
@@ -46,7 +46,7 @@
           <FormInput
             id="duration"
             label="Duration"
-            type="hour"
+            type="number"
             v-model="duration"
             :submit="submit"
             :placeholder="'Enter the average duration of the service in hours'"
@@ -58,7 +58,7 @@
           type="text"
           v-model="imageUrl"
           :submit="submit"
-          :placeholder="'Enter the image URL (optional)'"
+          :placeholder="'Enter the image URL'"
         />
         <button
           type="submit"
@@ -99,17 +99,18 @@
 </template>
 
 <script lang="ts" setup>
-// Utiliser placeholder / codepen.io pour l'image URL
 import { ref, computed } from "vue";
 import { useApi } from "@/composables/useApi";
 
+const authStore = useAuthStore();
 const submit = ref(false);
+const id = computed(() => authStore.user?.id);
 const title = ref({ content: "", isValid: false });
 const description = ref({ content: "", isValid: false });
 const domain = ref({ content: "", isValid: false });
 const price = ref({ content: "", isValid: false });
 const duration = ref({ content: "", isValid: false });
-const imageUrl = ref({ content: "", isValid: true }); // Optional field
+const imageUrl = ref({ content: "", isValid: true });
 
 const createServiceMessage = ref({
   message: "",
@@ -140,10 +141,11 @@ const { loading, data, error, post: postData } = useApi("services/create");
 
 const sendCreateService = async () => {
   const response = await postData({
+    providerId: id.value,
     title: title.value.content,
     description: description.value.content,
     domain: domain.value.content,
-    price: parseFloat(price.value.content),
+    price: price.value.content,
     imageUrl: imageUrl.value.content || null,
   });
 
