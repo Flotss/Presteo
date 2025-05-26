@@ -96,7 +96,7 @@ public class ServiceController {
     @PostMapping("/create")
     public ResponseEntity<ServiceDTO> createService(
             @Parameter(description = "Data for the new service") 
-            @RequestBody ServiceForm service) {
+            @ModelAttribute ServiceForm service) {
         SecurityUtils.verifyOwnershipOrAdmin(service, ServiceForm::getProviderId);
 
         var createdService = serviceService.createService(service);

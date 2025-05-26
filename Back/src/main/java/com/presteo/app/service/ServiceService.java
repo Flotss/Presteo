@@ -55,7 +55,9 @@ public class ServiceService {
         newService.setProvider(provider);
         newService.setTitle(service.getTitle());
         newService.setDescription(service.getDescription());
+        newService.setCity(service.getCity());
         newService.setPrice(service.getPrice());
+        newService.setDurationHours(service.getDurationHours());
         newService.setDomain(service.getDomain());
         newService.setImageUrl(imageUrl);
         return serviceRepository.save(newService);

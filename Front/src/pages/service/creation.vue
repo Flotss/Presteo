@@ -8,10 +8,11 @@
       <h1 class="text-3xl font-bold text-center mb-6">Create Service</h1>
 
       <form @submit.prevent="handleCreateService" novalidate>
+
         <div class="flex flex-col sm:flex-row sm:space-x-4">
           <FormInput
             id="title"
-            label="Title"
+            label="Title *"
             type="text"
             v-model="title"
             :submit="submit"
@@ -19,7 +20,7 @@
           />
           <FormInput
             id="domain"
-            label="Domain"
+            label="Domain *"
             type="text"
             v-model="domain"
             :submit="submit"
@@ -28,38 +29,56 @@
         </div>
         <FormInput
           id="description"
-          label="Description"
+          label="Description *"
           type="text"
           v-model="description"
           :submit="submit"
           :placeholder="'Enter the service description'"
         />
+        <FormInput
+          id="city"
+          label="City *"
+          type="text"
+          v-model="city"
+          :submit="submit"
+          :placeholder="'Enter the city of the service provider'"
+        />
         <div class="flex flex-col sm:flex-row sm:space-x-4 size-400">
           <FormInput
             id="price"
-            label="Price"
+            label="Price *"
             type="number"
+            min="0"
             v-model="price"
             :submit="submit"
             :placeholder="'Enter the service price per hour'"
           />
           <FormInput
             id="duration"
-            label="Duration"
+            label="Duration *"
             type="number"
+            min="0"
             v-model="duration"
             :submit="submit"
             :placeholder="'Enter the average duration of the service in hours'"
           />
         </div>
-        <FormInput
-          id="imageUrl"
-          label="Image URL"
-          type="text"
-          v-model="imageUrl"
-          :submit="submit"
-          :placeholder="'Enter the image URL'"
+
+        <div class="mb-4">
+        <label
+          class="block mb-2 text-sm text-gray-900 dark:text-white"
+          for="file_input"
+          >Upload file</label
+        >
+        <input
+          class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+          id="file_input"
+          type="file"
+          accept="image/*"
+          @change="onFileChange"
         />
+        </div>
+
         <button
           type="submit"
           class="w-full bg-blue-600 text-white rounded py-2 transition duration-150"
@@ -99,9 +118,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
-import { useApi } from "@/composables/useApi";
-
 const authStore = useAuthStore();
 const submit = ref(false);
 const id = computed(() => authStore.user?.id);
@@ -111,6 +127,9 @@ const domain = ref({ content: "", isValid: false });
 const price = ref({ content: "", isValid: false });
 const duration = ref({ content: "", isValid: false });
 const imageUrl = ref({ content: "", isValid: true });
+const city = ref({ content: "", isValid: false });
+
+const selectedFile = ref<File | null>(null);
 
 const createServiceMessage = ref({
   message: "",
@@ -122,49 +141,61 @@ const allInputRequired = computed(() => {
     title.value.content.trim() !== "" &&
     description.value.content.trim() !== "" &&
     domain.value.content.trim() !== "" &&
+    city.value.content.trim() !== "" &&
     price.value.content.trim() !== "" &&
     duration.value.content.trim() !== ""
   );
 });
 
-const handleCreateService = () => {
-  submit.value = true;
+const onFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    selectedFile.value = target.files[0];
+  }
+};
+
+const { post: postData, loading, error } = useApi("services/create");
+const handleCreateService = async () => {
+  loading.value = true;
 
   if (!allInputRequired.value) {
+    createServiceMessage.value.message = "Please fill all required fields.";
+    createServiceMessage.value.isSuccess = false;
+    loading.value = false;
     return;
   }
 
-  sendCreateService();
-};
-
-const { loading, data, error, post: postData } = useApi("services/create");
-
-const sendCreateService = async () => {
-  const response = await postData({
-    providerId: id.value,
-    title: title.value.content,
-    description: description.value.content,
-    domain: domain.value.content,
-    price: price.value.content,
-    imageUrl: imageUrl.value.content || null,
-  });
-
-  if (response && response.message === "Service created successfully!") {
-    createServiceMessage.value.message = "Service created successfully!";
-    createServiceMessage.value.isSuccess = true;
-
-    setTimeout(() => {
-      createServiceMessage.value.message = "Redirecting in 1 second...";
-    }, 1000);
-
-    setTimeout(() => {
-      const router = useRouter();
-      router.push("/services");
-    }, 2000);
-  } else {
-    console.error("Service creation failed:", response, error.value);
-    createServiceMessage.value.message = `Service creation failed, please try again. ${error.value?.error}`;
-    createServiceMessage.value.isSuccess = false;
+  // Création du service avec FormData pour gérer l'image
+  const formData = new FormData();
+  formData.append("providerId", String(id.value ?? ""));
+  formData.append("title", title.value.content);
+  formData.append("description", description.value.content);
+  formData.append("domain", domain.value.content);
+  formData.append("city", city.value.content);
+  formData.append("price", price.value.content);
+  formData.append("durationHours", duration.value.content);
+  if (selectedFile.value) {
+    formData.append("imageFile", selectedFile.value);
   }
+
+  let response;
+  try {
+    response = await postData(formData); // postData doit accepter FormData
+    console.log("Réponse backend création service :", response);
+    if (error.value) {
+      throw new Error(error.value || "Failed to create service");
+    }
+  } catch (e: any) {
+    createServiceMessage.value.message = "Erreur lors de la création du service. " + e.message;
+    createServiceMessage.value.isSuccess = false;
+    return;
+  }
+
+  createServiceMessage.value.message = "Service created successfully!";
+  createServiceMessage.value.isSuccess = true;
+  setTimeout(() => {
+    const router = useRouter();
+    router.push("/services");
+  }, 2000);
 };
 </script>

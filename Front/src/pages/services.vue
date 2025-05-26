@@ -34,10 +34,12 @@
           :key="service.id"
           class="py-4"
         >
+        <NuxtLink :to="'/booking/' + service.id">
           <div class="flex justify-between items-center">
             <div>
               <div class="flex space-x-5">
-                <h1 class="text-lg font-semibold text-gray-800">
+                <h1 class="text-lg font-semibold text-gray-800 hover:text-blue-600">
+                  {{ service.title }}
                   {{ service.domain }}
                 </h1>
                 <span
@@ -49,6 +51,7 @@
               <p class="text-sm text-gray-500">Price: {{ service.price }} €</p>
             </div>
           </div>
+          </NuxtLink>
         </div>
       </ul>
       <div v-if="loading" class="text-center text-gray-500">
@@ -124,8 +127,7 @@ const filterService = (service) => {
     service.city.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     service.price
       .toString()
-      .toLowerCase()
-      .includes(searchQuery.value.toLowerCase())
+      .includes(searchQuery.value)
   );
 };
 

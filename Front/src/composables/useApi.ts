@@ -29,51 +29,60 @@ export function useApi<T>(endpoint: string, loadingState?: boolean) {
     }
   };
 
-  const makeRequest = async (method: string, payload?: any): Promise<any> => {
-    loading.value = true;
-    error.value = null;
-    let url = `${baseUrl}/${endpoint}`;
+const makeRequest = async (method: string, payload?: any): Promise<any> => {
+  loading.value = true;
+  error.value = null;
+  let url = `${baseUrl}/${endpoint}`;
 
-    const options: RequestInit = {
-      method,
-      headers,
-      credentials: "include",
-    };
+  let body: any = undefined;
 
-    if (method === "GET" && payload) {
-      const queryParams = new URLSearchParams(payload).toString();
-      url += `?${queryParams}`;
+  if (payload && ["POST", "PUT", "PATCH"].includes(method)) {
+    if (payload instanceof FormData) {
+      headers.delete("Content-Type");
+      body = payload;
+    } else {
+      body = JSON.stringify(payload);
     }
+  }
 
-    if (payload && ["POST", "PUT", "PATCH"].includes(method)) {
-      options.body = JSON.stringify(payload);
-    }
-
-    envLogger.log(`${method} request to ${url}`, payload || "");
-
-    try {
-      const response = await fetch(url, options);
-      const result = await parseResponse(response);
-  
-      if (!response.ok) {
-        error.value = result;
-        data.value = null;
-        envLogger.error(`Error ${method} on ${endpoint}:`, response.statusText);
-      } else {
-        data.value = method !== "DELETE" ? result : true;
-        envLogger.log(`${method} successful on ${endpoint}`, result);
-      }
-
-      return response;
-    } catch (err) {
-      error.value = err;
-      data.value = null;
-      envLogger.error(`Exception ${method} on ${endpoint}:`, err);
-      return { error: err };
-    } finally {
-      loading.value = false;
-    }
+  const options: RequestInit = {
+    method,
+    headers,
+    credentials: "include",
+    body,
   };
+
+  if (method === "GET" && payload) {
+    const queryParams = new URLSearchParams(payload).toString();
+    url += `?${queryParams}`;
+    delete options.body;
+  }
+
+  envLogger.log(`${method} request to ${url}`, payload || "");
+
+  try {
+    const response = await fetch(url, options);
+    const result = await parseResponse(response);
+
+    if (!response.ok) {
+      error.value = result;
+      data.value = null;
+      envLogger.error(`Error ${method} on ${endpoint}:`, response.statusText);
+    } else {
+      data.value = method !== "DELETE" ? result : true;
+      envLogger.log(`${method} successful on ${endpoint}`, result);
+    }
+
+    return response;
+  } catch (err) {
+    error.value = err;
+    data.value = null;
+    envLogger.error(`Exception ${method} on ${endpoint}:`, err);
+    return { error: err };
+  } finally {
+    loading.value = false;
+  }
+};
 
   return {
     data,

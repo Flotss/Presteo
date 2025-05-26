@@ -59,13 +59,11 @@
         </div>
         <div class="flex flex-col space-y-1">
           <NuxtLink :to="'/user/' + user.id + '/profile'">
-            <button @click="goToProfile(user)">
-              <span
-                class="inline-flex items-center justify-center rounded-md w-16 hover:bg-green-50 px-2 py-1 text-xs font-medium hover:text-green-700 ring-1 ring-green-600/20 ring-inset transition-duration-500 transition-all"
-              >
-                Modify
-              </span>
-            </button>
+            <span
+              class="inline-flex items-center justify-center rounded-md w-16 hover:bg-green-50 px-2 py-1 text-xs font-medium hover:text-green-700 ring-1 ring-green-600/20 ring-inset transition-duration-500 transition-all"
+            >
+              Modify
+            </span>
           </NuxtLink>
           <button @click="deleteUser(user)">
             <span
@@ -123,7 +121,7 @@ useHead({
 const users = ref([]);
 const searchQuery = ref("");
 const roleFilter = ref("");
-const { loading, data, error,  fetch } = useApi("users");
+const { loading, data, error, fetch } = useApi("users");
 
 const authStore = useAuthStore();
 
@@ -161,6 +159,13 @@ const filterUser = (user) => {
     (fullName.includes(searchQuery.value.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.value.toLowerCase()))
   );
+};
+
+const scrollTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 };
 
 const {
@@ -210,11 +215,4 @@ onMounted(() => {
     router.push("/unauthorized");
   }
 });
-
-const scrollTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
 </script>
