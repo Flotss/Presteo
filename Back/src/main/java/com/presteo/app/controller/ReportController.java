@@ -39,8 +39,11 @@ public class ReportController {
     @Operation(summary = "Get all reports", description = "Retrieves the complete list of reports in the system")
     @ApiResponse(responseCode = "200", description = "List of reports successfully retrieved")
     @GetMapping
-    public ResponseEntity<List<Report>> getAllReports() {
-        List<Report> reports = reportService.getAllReports();
+    public ResponseEntity<List<ReportDTO>> getAllReports() {
+        List<ReportDTO> reports = reportService.getAllReports()
+                .stream()
+                .map(ReportDTO::build)
+                .toList();
         return ResponseEntity.ok(reports);
     }
 
@@ -75,10 +78,11 @@ public class ReportController {
         @ApiResponse(responseCode = "400", description = "Invalid report data")
     })
     @PostMapping("/create")
-    public ResponseEntity<Report> createReport(
+    public ResponseEntity<ReportDTO> createReport(
             @Parameter(description = "Data for the new report") 
             @RequestBody CreateReport report) {
         Report createdReport = reportService.createReport(report);
-        return ResponseEntity.ok(createdReport);
+        ReportDTO reportDTO = ReportDTO.build(createdReport);
+        return ResponseEntity.ok(reportDTO);
     }
 }
