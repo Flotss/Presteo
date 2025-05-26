@@ -19,7 +19,13 @@ public class ServiceForm {
     private String domain;
 
     @NotNull
+    private String city;
+
+    @NotNull
     private Double price;
+
+    @NotNull
+    private int durationHours;
 
     private MultipartFile imageFile;
 }
