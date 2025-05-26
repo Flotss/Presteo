@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -107,5 +108,22 @@ public class UserService {
             userRepository.save(user);
             return user;
         }).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    /**
+     * Search users by first name, last name, or id (partial or exact match)
+     */
+    public List<User> searchUsers(String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+        String lowerQuery = query.toLowerCase();
+        return userRepository.findAll().stream()
+                .filter(user ->
+                        (user.getFirstName() != null && user.getFirstName().toLowerCase().contains(lowerQuery)) ||
+                        (user.getLastName() != null && user.getLastName().toLowerCase().contains(lowerQuery)) ||
+                        (user.getId() != null && user.getId().toString().contains(lowerQuery))
+                )
+                .toList();
     }
 }

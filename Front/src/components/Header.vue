@@ -14,8 +14,7 @@
               v-show="
                 (!navItem.showWhenLoggedIn && !navItem.showWhenAdmin) ||
                 (navItem.showWhenLoggedIn && authStore.isLoggedIn) ||
-                (navItem.showWhenAdmin &&
-                  authStore.user?.role?.name === 'ADMIN')
+                (navItem.showWhenAdmin && isAdmin)
               "
               :key="navItem.name"
               class="text-gray-600 hover:text-blue-600 transition duration-150"
@@ -138,6 +137,10 @@ const authStore = useAuthStore();
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const isAdmin = computed(() => {
+  return authStore.user?.role?.name === "ADMIN";
+});
 
 const route = useRoute();
 const routePath = computed(() => {

@@ -171,4 +171,17 @@ public class UserController {
         var userUpdated = userService.updateProfilePicture(id, file);
         return ResponseEntity.ok(UserDTO.build(userUpdated));
     }
+
+    /**
+     * Search users by first name, last name, or id (partial or exact match)
+     * @param query The search string
+     * @return List of matching users as DTOs
+     */
+    @Operation(summary = "Search users", description = "Search users by first name, last name, or id (partial or exact match)")
+    @ApiResponse(responseCode = "200", description = "List of users matching the search query")
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String query) {
+        var users = userService.searchUsers(query).stream().map(UserDTO::build).toList();
+        return ResponseEntity.ok(users);
+    }
 }

@@ -77,6 +77,7 @@
     </ul>
     <div v-if="loading" class="text-center text-gray-500">
       Loading of the user list...
+      <font-awesome-icon :icon="['fas', 'circle-notch']" spin />
     </div>
     <div v-if="error" class="text-center text-red-500">{{ error }}</div>
     <p
@@ -111,6 +112,7 @@
 
 <script setup>
 definePageMeta({
+  layout: 'admin',
   middleware: "auth",
 });
 
