@@ -1,23 +1,23 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-12 mb-12">
-    <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-6">
+  <div class="max-w-4xl mx-auto p-2 sm:p-4 md:p-6 bg-white rounded-lg shadow-md mt-6 sm:mt-12 mb-6 sm:mb-12">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-4 sm:mb-6">
       Users list
     </h1>
-    <p class="text-lg text-center text-gray-600 mb-8">
+    <p class="text-base sm:text-lg text-center text-gray-600 mb-4 sm:mb-8">
       Search and navigue amongst the connected users :
     </p>
 
     <!-- Barre de recherche -->
-    <div class="mb-8">
+    <div class="mb-4 sm:mb-8">
       <input
         type="text"
         v-model="searchQuery"
         placeholder="Search for a user..."
-        class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full p-3 sm:p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <select
         v-model="roleFilter"
-        class="mt-4 w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="mt-3 sm:mt-4 w-full p-3 sm:p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">All Roles</option>
         <option value="Admin">ADMIN</option>
@@ -26,30 +26,30 @@
     </div>
 
     <!-- Modifications dans la liste des utilisateurs -->
-    <ul v-if="paginatedUsers.length > 0" class="divide-y divide-gray-200 mb-8">
+    <ul v-if="paginatedUsers.length > 0" class="divide-y divide-gray-200 mb-6 sm:mb-8">
       <li
         v-for="user in paginatedUsers"
         :key="user.id"
-        class="flex justify-between items-center py-4"
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 sm:py-4 gap-3 sm:gap-0"
       >
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3 sm:space-x-4 w-full">
           <div
-            class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center"
+            class="w-12 h-12 sm:w-10 sm:h-10 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0"
           >
             <img
               :src="'https://api.dicebear.com/9.x/dylan/svg?seed=' + user.id"
               alt="Avatar"
-              class="h-10 w-10 rounded-full border border-gray-200"
+              class="h-12 w-12 sm:h-10 sm:w-10 rounded-full border border-gray-200 object-cover"
             />
           </div>
-          <div class="flex flex-col space-y-0">
-            <div class="flex space-x-5">
-              <div class="text-lg font-semibold p-0 m-0 text-gray-800">
+          <div class="flex flex-col space-y-0 w-full">
+            <div class="flex flex-col sm:flex-row sm:space-x-5 w-full">
+              <div class="text-base sm:text-lg font-semibold p-0 m-0 text-gray-800">
                 {{ user.firstName }} {{ user.lastName }}
               </div>
               <span
                 v-if="user.role && user.role.name"
-                class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0 ml-2 font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset"
+                class="inline-flex items-center rounded-md max-w-fit bg-blue-50 px-2 py-1 text-xs sm:text-s font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset mt-1 sm:mt-0"
               >
                 {{ user.role.name }}
               </span>
@@ -57,17 +57,17 @@
             <small class="text-gray-500 p-0 m-0">{{ user.email }}</small>
           </div>
         </div>
-        <div class="flex flex-col space-y-1">
+        <div class="flex flex-row sm:flex-col space-x-2 sm:space-x-0 sm:space-y-1 ml-auto">
           <NuxtLink :to="'/user/' + user.id + '/profile'">
             <span
-              class="inline-flex items-center justify-center rounded-md w-16 hover:bg-green-50 px-2 py-1 text-xs font-medium hover:text-green-700 ring-1 ring-green-600/20 ring-inset transition-duration-500 transition-all"
+              class="inline-flex items-center justify-center rounded-md w-20 sm:w-16 hover:bg-green-50 px-2 py-1 text-xs font-medium hover:text-green-700 ring-1 ring-green-600/20 ring-inset transition duration-200"
             >
               Modify
             </span>
           </NuxtLink>
           <button @click="deleteUser(user)">
             <span
-              class="inline-flex items-center justify-center rounded-md w-16 hover:bg-red-50 px-2 py-1 text-xs font-medium hover:text-red-700 ring-1 ring-red-600/10 ring-inset transition-duration-500 transition-all"
+              class="inline-flex items-center justify-center rounded-md w-20 sm:w-16 hover:bg-red-50 px-2 py-1 text-xs font-medium hover:text-red-700 ring-1 ring-red-600/10 ring-inset transition duration-200"
             >
               Delete
             </span>
@@ -82,27 +82,27 @@
     <div v-if="error" class="text-center text-red-500">{{ error }}</div>
     <p
       v-if="paginatedUsers == 0"
-      class="text-center text-gray-500 text-lg mb-8"
+      class="text-center text-gray-500 text-base sm:text-lg mb-6 sm:mb-8"
     >
       The user you are looking for does not exist.
     </p>
 
     <!-- Pagination -->
-    <div class="flex justify-between items-center mt-8">
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 gap-3 sm:gap-0">
       <button
         @click="prevPage"
         :disabled="currentPage === 1"
-        class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        class="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Previous
       </button>
-      <span class="text-gray-600 text-lg">
+      <span class="text-gray-600 text-base sm:text-lg">
         Page {{ currentPage }} sur {{ totalPages }}
       </span>
       <button
         @click="nextPage"
         :disabled="currentPage === totalPages"
-        class="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        class="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Next
       </button>
@@ -194,18 +194,19 @@ const deleteUser = async (user) => {
     );
     const response = await deleteApi();
 
-    if (response.status === 204) {
-      users.value = users.value.filter((u) => u.id !== user.id);
-      alert(`User ${fullName} has been successfully deleted.`);
-    } else {
-      throw new Error(deleteError.value || "Failed to delete user.");
+    if (deleteError.value) {
+      throw new Error(deleteError.value || "Failed to delete user");
     }
+
+    // Réactualiser la liste des utilisateurs après la suppression
+    users.value = users.value.filter((u) => u.id !== user.id);
+    console.log("User deleted:", response.value);
   } catch (err) {
     console.error(
       "There has been an error while deleting the user:",
       err.message
     );
-    alert(`Failed to delete user: ${fullName}`);
+    alert("Failed to delete user. Please try again later.");
   }
 };
 
@@ -218,3 +219,14 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+/* Ajout d'un style pour le bouton de suppression avec une animation */
+button {
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+</style>

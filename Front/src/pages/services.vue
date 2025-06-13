@@ -123,6 +123,7 @@ const fetchServices = async () => {
 
 const filterService = (service) => {
   return (
+    service.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     service.domain.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     service.city.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     service.price
