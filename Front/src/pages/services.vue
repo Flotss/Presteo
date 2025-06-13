@@ -32,25 +32,35 @@
         <div
           v-for="service in paginatedServices"
           :key="service.id"
-          class="py-4"
+          class="py-4 relative rounded-lg group"
         >
-        <NuxtLink :to="'/booking/' + service.id">
-          <div class="flex justify-between items-center">
-            <div>
-              <div class="flex space-x-5">
-                <h1 class="text-lg font-semibold text-gray-800 hover:text-blue-600">
-                  {{ service.title }}
-                  {{ service.domain }}
-                </h1>
-                <span
-                  class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-s font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset"
-                >
-                  City : {{ service.city }}</span
-                >
+          <NuxtLink :to="'/booking/' + service.id">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div class="flex-1 w-full">
+                <div class="flex flex-col gap-2">
+                  <div class="flex flex-wrap gap-3 items-center">
+                    <h1 class="text-lg font-semibold text-gray-800 hover:text-blue-600">
+                      {{ service.title }}
+                      {{ service.domain }}
+                    </h1>
+                    <span
+                      class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-s font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset"
+                    >
+                      City : {{ service.city }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">Price: {{ service.price }} €</p>
+                </div>
               </div>
-              <p class="text-sm text-gray-500">Price: {{ service.price }} €</p>
+              <div class="flex-shrink-0 w-full sm:w-auto flex justify-center">
+                <img
+                  v-if="service.imageUrl"
+                  :src="service.imageUrl"
+                  alt="Service image"
+                  class="rounded-lg object-contain w-32 h-20 md:w-48 md:h-28 shadow-md border border-gray-200 bg-white"
+                />
+              </div>
             </div>
-          </div>
           </NuxtLink>
         </div>
       </ul>
