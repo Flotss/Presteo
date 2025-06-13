@@ -180,6 +180,13 @@ const routes = [
     isActualPage: computed(() => routePath.value === "/bookings/mybookings"),
     showWhenLoggedIn: true,
   },
+
+  {
+    name: "Search",
+    path: "/search",
+    isActualPage: computed(() => routePath.value === "/search"),
+    showWhenLoggedIn: true,
+  },
   // Admin pages
   {
     name: "Admin Panel",
