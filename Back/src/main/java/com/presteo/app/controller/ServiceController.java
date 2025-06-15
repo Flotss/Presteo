@@ -155,7 +155,7 @@ public class ServiceController {
      * Updates the image associated with a service.
      * Accessible only to users with the PROVIDER role who own the service.
      *
-     * @param id Service identifier
+     * @param serviceId Service identifier
      * @param file New service image
      * @return The updated service as a DTO
      */
@@ -169,11 +169,11 @@ public class ServiceController {
     @SecuredRoute(roles = {RoleType.PROVIDER})
     @PostMapping("/update-service-picture")
     public ResponseEntity<ServiceDTO> updateServicePicture(
-            @Parameter(description = "ID of the service to update") @RequestParam Long id,
+            @Parameter(description = "ID of the service to update") @RequestParam Long serviceId,
             @Parameter(description = "New service image") @RequestParam("file") MultipartFile file) {
-        checkCredential(id);
+        checkCredential(serviceId);
 
-        Service updatedService = serviceService.updateServicePicture(id, file);
+        Service updatedService = serviceService.updateServicePicture(serviceId, file);
         return ResponseEntity.ok(ServiceDTO.build(updatedService));
     }
 

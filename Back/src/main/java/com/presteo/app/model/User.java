@@ -99,4 +99,10 @@ public class User {
     @UpdateTimestamp
     @Column(nullable = false)
     private Date updatedAt;
+
+    @Transient
+    private double averageRating;
+
+    @Transient
+    private long reviewCount;
 }

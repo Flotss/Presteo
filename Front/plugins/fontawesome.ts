@@ -60,9 +60,11 @@ import {
   faUserCog,
   faUsers,
   faUserSlash,
-  faUserTie
+  faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
   faGithub,
@@ -124,6 +126,7 @@ library.add(
   faFlag,
   faCogs,
   faHome,
+  faStarRegular,
 );
 
 export default defineNuxtPlugin((nuxtApp) => {

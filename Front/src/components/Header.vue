@@ -128,6 +128,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
+
 defineOptions({
   name: "AppHeader",
 });
@@ -138,9 +140,15 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-const isAdmin = computed(() => {
-  return authStore.user?.role?.name === "ADMIN";
-});
+const isAdmin = ref(false);
+
+watch(
+  () => authStore.user?.role?.name,
+  (roleName) => {
+    isAdmin.value = roleName === "ADMIN";
+  },
+  { immediate: true }
+);
 
 const route = useRoute();
 const routePath = computed(() => {

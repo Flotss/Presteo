@@ -43,10 +43,11 @@
         :can-modify="canModify"
         :user-id="userId"
         :loading-delete="loadingDelete"
-        @update:temp-user="handleTempUserUpdate($event)"
-        @save="save"
+        @update:temp-user="handleTempUserUpdate"
+        @save="handleSave"
         @reset="resetAllFields"
         @delete-account="deleteAccount"
+        @update:image="handleImageUpdate"
       />
 
       <!-- Services Section -->
@@ -98,6 +99,7 @@ const confirmSave = ref(false);
 const saved = ref(false);
 const isOwnProfile = ref(false);
 const isNavOpen = ref(false);
+const newImage = ref<File | null>(null);
 
 // New state for navigation and sections
 const activeSection = ref("profile");
@@ -136,6 +138,10 @@ const validateField = (field: string, value: unknown) => {
 
 const hasChanges = computed(() => {
   if (!user.value || !tempUser.value) return false;
+
+  if (newImage.value) {
+    return true;
+  }
 
   return Object.keys(tempUser.value).some((key) => {
     const tempValue = tempUser.value![key as keyof User];
@@ -298,7 +304,11 @@ const {
   error: errorUpdate,
 } = useApi<User>(`users/${userId.value}`);
 
-const save = () => {
+const handleImageUpdate = (file: File) => {
+  newImage.value = file;
+};
+
+const handleSave = async () => {
   if (!tempUser.value) return;
   putDataUpdate(tempUser.value)
     .then((response) => {
@@ -339,6 +349,23 @@ const save = () => {
         profileHeader.value.closeDescriptionEdit();
       }
     });
+
+  if (newImage.value) {
+    const { post: uploadImage, data: dataUpdate } = useApi<User>(`users/update-profile-picture`);
+    const formData = new FormData();
+    formData.append("file", newImage.value);
+    formData.append("userId", userId.value);
+    const response = await uploadImage(formData);
+    if (response.ok && dataUpdate.value) {
+      newImage.value = null;
+      if (user.value) {
+        user.value.profileImageUrl = dataUpdate.value.profileImageUrl;
+        if (isOwnProfile.value) {
+          authStore.user = { ...user.value };
+        }
+      }
+    }
+  }
 };
 
 const { loading: loadingDelete, delete: deleteUser } = useApi<User>(

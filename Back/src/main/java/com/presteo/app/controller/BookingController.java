@@ -6,7 +6,6 @@ import com.presteo.app.dto.BookingDTO;
 import com.presteo.app.model.Booking;
 import com.presteo.app.model.BookingStatusType;
 import com.presteo.app.model.RoleType;
-import com.presteo.app.model.Service;
 import com.presteo.app.security.annotation.SecuredRoute;
 import com.presteo.app.security.utils.SecurityUtils;
 import com.presteo.app.service.BookingService;
@@ -162,7 +161,7 @@ public class BookingController {
      * Updates the status of an existing booking.
      *
      * @param id Booking identifier
-     * @param status New booking status
+     * @param statusUpdate New booking status
      * @return The updated booking
      * @throws ResponseStatusException If the booking is not found (404) or if the status change is invalid (400)
      */

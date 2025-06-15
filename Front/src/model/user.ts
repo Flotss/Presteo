@@ -1,6 +1,3 @@
-import type { ProviderInformation } from "./providerInformation";
-import type { Role } from "./role";
-import type { UserDescription } from "./roleDescription";
 import type { RoleType } from "./roleType";
 
 export interface User {
@@ -14,6 +11,7 @@ export interface User {
   birthDate: string;
   phoneNumber: string;
   email: string;
+  profileImageUrl?: string;
   role?: {
     id?: number;
     name?: RoleType;
@@ -28,7 +26,8 @@ export interface User {
   };
   createdAt?: Date;
   updatedAt?: Date;
-  currentPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
+
+  // provider specific fields
+  averageRating?: number;
+  reviewCount?: number;
 }

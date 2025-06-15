@@ -18,24 +18,43 @@ public class ServiceService {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
     private final ImageStorageService imageStorageService;
+    private final ReviewService reviewService;
 
-    public ServiceService(ServiceRepository serviceRepository, UserRepository userRepository, ImageStorageService imageStorageService) {
+    public ServiceService(ServiceRepository serviceRepository, UserRepository userRepository, ImageStorageService imageStorageService, ReviewService reviewService) {
         this.serviceRepository = serviceRepository;
         this.userRepository = userRepository;
         this.imageStorageService = imageStorageService;
+        this.reviewService = reviewService;
     }
 
     public List<Service> getAllServices() {
-        return serviceRepository.findAll();
+        List<Service> services = serviceRepository.findAll();
+        services.forEach(service -> {
+            service.setAverageRating(reviewService.getServiceAverageRating(service.getId()));
+            service.setReviewCount((long) reviewService.getServiceReviews(service.getId()).size());
+        });
+        return services;
     }
 
     public List<Service> getServiceByProviderId(Long providerId) {
-        return serviceRepository.findAllByProvider_Id(providerId);
+        List<Service> services = serviceRepository.findAllByProvider_Id(providerId);
+        services.forEach(service -> {
+            service.setAverageRating(reviewService.getServiceAverageRating(service.getId()));
+            service.setReviewCount((long) reviewService.getServiceReviews(service.getId()).size());
+        });
+        return services;
     }
 
     public Service getServiceById(Long id) {
-        return serviceRepository.findById(id)
+        Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service with ID " + id + " not found"));
+        service.setAverageRating(reviewService.getServiceAverageRating(id));
+        service.setReviewCount((long) reviewService.getServiceReviews(id).size());
+        service.getProvider().setAverageRating(reviewService.getProviderAverageRating(service.getProvider().getId()));
+        var reviews = reviewService.getReviewsForProvider(service.getProvider().getId());
+        service.getProvider().setReviewCount((reviews != null) ? (long) reviews.size() : 0L);
+        service.setReviews(reviews);
+        return service;
     }
 
     public Service createService(ServiceForm service) {
@@ -64,10 +83,17 @@ public class ServiceService {
     }
 
     public Service updateService(Service service) {
-        if (!serviceRepository.existsById(service.getId())) {
-            throw new EntityNotFoundException("Service with ID " + service.getId() + " not found");
-        }
-        return serviceRepository.save(service);
+        var existingService = serviceRepository.findById(service.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Service with ID " + service.getId() + " not found"));
+
+        existingService.setTitle(service.getTitle());
+        existingService.setDescription(service.getDescription());
+        existingService.setCity(service.getCity());
+        existingService.setPrice(service.getPrice());
+        existingService.setDurationHours(service.getDurationHours());
+        existingService.setDomain(service.getDomain());
+
+        return serviceRepository.save(existingService);
     }
 
     public void deleteService(Long id) {

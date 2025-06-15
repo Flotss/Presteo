@@ -36,12 +36,24 @@
         @submit="submitBooking"
       />
     </div>
+
+    <!-- Section Reviews -->
+    <div v-if="service && service.reviews && service.reviews.length > 0" class="container mx-auto px-4 py-8 max-w-3xl">
+      <h2 class="text-2xl font-bold mb-4">Customer Reviews</h2>
+      <div v-for="(review, idx) in service.reviews" :key="idx" class="mb-6 p-4 border rounded-lg bg-white shadow">
+        <div class="flex items-center mb-2">
+          <span class="font-semibold mr-2">{{ review.customer?.firstName }} {{ review.customer?.lastName }}</span>
+          <RatingDisplay :rating="review.rating" :count="1" :show-count="false" class="ml-2" />
+        </div>
+        <p class="text-gray-700">{{ review.reviewText }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Service } from "~/model/service";
 import type { Booking } from "~/model/booking";
+import type { Service } from "~/model/service";
 
 useHead({
   title: "Booking | Presteo",

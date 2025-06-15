@@ -23,9 +23,12 @@ public class UserDTO {
     private String address;
     private String birthDate;
     private String phoneNumber;
+    private String profileImageUrl;
     private Role role;
     private String description;
     private String experience;
+    private Double averageRating;
+    private Long reviewCount;
 
     public static UserDTO build(User user) {
         return builder()
@@ -37,9 +40,12 @@ public class UserDTO {
                 .address(user.getAddress())
                 .birthDate(user.getBirthDate())
                 .phoneNumber(user.getPhoneNumber())
+                .profileImageUrl(user.getProfileImageUrl())
                 .role(user.getRole())
                 .description(user.getDescription() != null ? user.getDescription().getDescription() : "")
                 .experience(user.getProviderInformation() != null ? user.getProviderInformation().getExperience() : "")
+                .averageRating(user.getAverageRating())
+                .reviewCount(user.getReviewCount())
                 .build();
     }
 }

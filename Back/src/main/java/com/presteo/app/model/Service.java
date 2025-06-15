@@ -3,13 +3,18 @@ package com.presteo.app.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "services")
 public class Service {
 
@@ -59,4 +64,13 @@ public class Service {
     @Column(nullable = false)
     @UpdateTimestamp
     private Date updatedAt;
+
+    @Transient
+    private Double averageRating;
+
+    @Transient
+    private Long reviewCount;
+
+    @Transient
+    private List<Review> reviews;
 }

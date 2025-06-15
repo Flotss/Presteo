@@ -3,14 +3,40 @@
     class="profile-header bg-white rounded-lg shadow-sm mb-6 overflow-hidden"
   >
     <div class="p-6 flex items-center">
-      <div
-        class="profile-photo w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mr-6"
-      >
-        <NuxtImg
-          :src="'https://api.dicebear.com/9.x/dylan/svg?seed=' + user.id"
-          alt="User Profile Image"
-          class="w-full h-full rounded-full object-cover"
-        />
+      <div class="relative">
+        <div
+          class="relative w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
+          @click="canModify && triggerFileInput()"
+        >
+          <img
+            v-if="previewUrl || user?.profileImageUrl"
+            :src="previewUrl || user?.profileImageUrl"
+            alt="Profile"
+            class="w-full h-full object-cover"
+          />
+          <NuxtImg
+            v-else
+            :src="'https://api.dicebear.com/9.x/dylan/svg?seed=' + user.id"
+            alt="User Profile Image"
+            class="w-full h-full object-cover"
+          />
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="handleFileChange"
+          />
+          <div
+            v-if="canModify"
+            class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <font-awesome-icon
+              :icon="['fas', 'pen']"
+              class="text-white text-2xl"
+            />
+          </div>
+        </div>
       </div>
       <div class="profile-greeting w-full">
         <h2 v-if="isUserLoggedIn" class="text-2xl font-bold text-gray-800">
@@ -20,7 +46,9 @@
           User: {{ user.firstName }} {{ user.lastName }}
         </h2>
         <div class="text-gray-600 text-sm mt-1">
-          <div v-if="!editDescription">{{ user.description || 'No description provided' }}</div>
+          <div v-if="!editDescription">
+            {{ user.description || "No description provided" }}
+          </div>
           <div v-else>
             <input
               v-model="tempDescription"
@@ -30,8 +58,8 @@
             />
           </div>
           <button
-            @click="toggleDescriptionEdit"
             class="text-blue-600 hover:underline text-sm"
+            @click="toggleDescriptionEdit"
           >
             <font-awesome-icon
               :icon="
@@ -49,22 +77,30 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
+import { ref } from "vue";
+
 const props = defineProps({
   user: {
-    type: Object ,
+    type: Object,
     required: true,
   },
   isUserLoggedIn: {
     type: Boolean,
     default: false,
   },
+  canModify: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(["update:description", "reset"]);
+const emit = defineEmits(["update:description", "reset", "update:image"]);
 
 const editDescription = ref(false);
 const tempDescription = ref(props.user.description);
+const previewUrl = ref<string | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 watch(
   () => props.user.description,
@@ -90,7 +126,22 @@ const resetDescription = () => {
 
 const closeDescriptionEdit = () => {
   editDescription.value = false;
-}; 
+};
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    previewUrl.value = URL.createObjectURL(file);
+    emit("update:image", file);
+  }
+};
+
+function triggerFileInput() {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+}
 
 defineExpose({ resetDescription, closeDescriptionEdit });
 

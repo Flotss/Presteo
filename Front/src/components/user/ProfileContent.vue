@@ -14,7 +14,9 @@
       ref="profileHeader"
       :user="user"
       :is-user-logged-in="isUserLoggedFetched"
+      :can-modify="canModify"
       @update:description="emit('update:tempUser', { description: $event })"
+      @update:image="handleImageUpdate"
     />
 
     <SaveActionButtons
@@ -89,6 +91,7 @@ const emit = defineEmits<{
   (e: "update:description", value: string): void;
   (e: "update:tempUser", value: Partial<User>): void;
   (e: "save" | "reset" | "delete-account"): void;
+  (e: "update:image", value: File): void;
 }>();
 
 const profileHeader = ref<InstanceType<typeof ProfileHeader> | null>(null);
@@ -98,5 +101,9 @@ const resetAllFields = () => {
     profileHeader.value.resetDescription();
   }
   emit("reset");
+};
+
+const handleImageUpdate = (file: File) => {
+  emit("update:image", file);
 };
 </script>

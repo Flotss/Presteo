@@ -118,6 +118,6 @@ const createNewService = () => {
 };
 
 const editService = (service: Service) => {
-  router.push(`/services/${service.id}/edit`);
+  router.push(`/service/${service.id}/edit`);
 };
 </script>

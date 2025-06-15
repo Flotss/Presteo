@@ -157,6 +157,27 @@
               />
               {{ booking.service.price }}€
             </div>
+            <div v-if="booking.status === 'COMPLETED'" class="mt-4">
+              <div v-if="!booking.hasReview" class="space-y-2">
+                <h4 class="text-sm font-medium text-gray-700">
+                  Leave a Review
+                </h4>
+                <StarRatingInput
+                  v-model="booking._pendingRating"
+                  @submit="
+                    ({ rating, reviewText, done }) =>
+                      handleReviewSubmit(booking, rating, reviewText, done)
+                  "
+                />
+              </div>
+              <div v-else class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Your rating:</span>
+                <RatingDisplay
+                  :rating="booking.userRating"
+                  :show-count="false"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -167,13 +188,19 @@
 <script setup lang="ts">
 import type { Booking } from "~/model/booking";
 import { BookingStatusType } from "~/model/booking";
+import { useApi } from "~/composables/useApi";
 
 useHead({
   title: "My Bookings | Presteo",
 });
 
+definePageMeta({
+  middleware: "auth",
+});
+
 const bookings = ref<Booking[]>([]);
 const loading = ref(true);
+const authStore = useAuthStore();
 
 const activeBookings = computed(() => {
   return bookings.value.filter(
@@ -220,12 +247,37 @@ const formatDate = (date: Date) => {
   });
 };
 
+const handleReviewSubmit = async (
+  booking: Booking,
+  rating: number,
+  reviewText: string,
+  done: () => void
+) => {
+  try {
+    const { post } = useApi(`reviews`);
+    const customerId = authStore.user?.id;
+    await post({
+      serviceId: booking.service.id,
+      customerId,
+      rating,
+      reviewText,
+    });
+    // Update booking locally
+    booking.hasReview = true;
+    booking.userRating = rating;
+  } catch (error) {
+    console.error("Error submitting review:", error);
+  } finally {
+    done();
+  }
+};
+
 onMounted(async () => {
   try {
     const { data, fetch } = useApi<Booking[]>("bookings/mybookings");
     await fetch();
     if (data.value) {
-      bookings.value = data.value;
+      bookings.value = data.value.map((b) => ({ ...b, _pendingRating: 0 }));
     }
   } catch (error) {
     console.error("Error fetching bookings:", error);

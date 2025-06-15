@@ -150,7 +150,7 @@ public class UserController {
      * Updates a user's profile picture.
      * Verifies that the authenticated user has the right to modify the requested profile.
      *
-     * @param id User identifier
+     * @param userId User identifier
      * @param file New profile picture
      * @return The updated user as a DTO
      */
@@ -165,10 +165,10 @@ public class UserController {
     @PostMapping("/update-profile-picture")
     public ResponseEntity<UserDTO> updateProfilePicture(
             @Parameter(description = "ID of the user to update") 
-            @RequestParam Long id,
+            @RequestParam Long userId,
             @Parameter(description = "New profile picture") 
             @RequestParam("file") MultipartFile file) {
-        var userUpdated = userService.updateProfilePicture(id, file);
+        var userUpdated = userService.updateProfilePicture(userId, file);
         return ResponseEntity.ok(UserDTO.build(userUpdated));
     }
 

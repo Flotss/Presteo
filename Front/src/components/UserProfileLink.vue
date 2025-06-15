@@ -10,10 +10,10 @@
         <div class="h-10 w-10">
           <NuxtImg
             :src="
-              'https://api.dicebear.com/9.x/dylan/svg?seed=' + authStore.user.id
+              authStore.user.profileImageUrl || 'https://api.dicebear.com/9.x/dylan/svg?seed=' + authStore.user.id
             "
             alt="Avatar"
-            class="h-10 w-10 rounded-full border border-gray-200"
+            class="h-10 w-10 rounded-full border border-gray-200 object-cover"
             :class="{ hidden: !imageLoaded }"
             @load="imageLoaded = true"
           />

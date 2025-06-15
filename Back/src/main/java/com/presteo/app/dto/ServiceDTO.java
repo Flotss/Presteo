@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,6 +26,9 @@ public class ServiceDTO {
     private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
+    private Double averageRating;
+    private Long reviewCount;
+    private List<ReviewDTO> reviews;
 
     public static ServiceDTO build(Service service) {
         return builder()
@@ -38,6 +42,9 @@ public class ServiceDTO {
                 .imageUrl(service.getImageUrl())
                 .price(service.getPrice())
                 .isActive(service.isActive())
+                .averageRating(service.getAverageRating())
+                .reviewCount(service.getReviewCount())
+                .reviews(service.getReviews() != null ? service.getReviews().stream().map(ReviewDTO::buildMini).toList() : List.of())
                 .createdAt(service.getCreatedAt())
                 .updatedAt(service.getUpdatedAt())
                 .build();

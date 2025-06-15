@@ -43,6 +43,7 @@ public class ReportController {
         List<ReportDTO> reports = reportService.getAllReports()
                 .stream()
                 .map(ReportDTO::build)
+                .sorted((ReportDTO r1, ReportDTO r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()))
                 .toList();
         return ResponseEntity.ok(reports);
     }
