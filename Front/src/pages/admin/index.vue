@@ -14,13 +14,13 @@
         </div>
         <p class="text-gray-600">View, edit, or delete user accounts.</p>
       </NuxtLink>
-      <div class="block p-6 bg-yellow-50 rounded-lg shadow opacity-60 cursor-not-allowed">
-        <div class="flex items-top mb-2">
+      <NuxtLink to="/admin/reports" class="block p-6 bg-yellow-50 rounded-lg shadow hover:bg-yellow-100 transition">
+        <div class="flex items-center mb-2">
           <font-awesome-icon :icon="['fas', 'flag']" class="text-2xl mr-2 text-yellow-700" />
-          <h2 class="text-2xl font-bold text-yellow-700">Reports Management (soon)</h2>
+          <h2 class="text-2xl font-bold text-yellow-700">Reports Management</h2>
         </div>
         <p class="text-gray-600">Review and handle user reports and flagged content.</p>
-      </div>
+      </NuxtLink>
       <div class="block p-6 bg-gray-50 rounded-lg shadow opacity-60 cursor-not-allowed">
         <div class="flex items-center mb-2">
           <font-awesome-icon :icon="['fas', 'cogs']" class="text-2xl mr-2 text-gray-700" />

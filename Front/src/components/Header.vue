@@ -198,7 +198,7 @@ const routes = [
   // Admin pages
   {
     name: "Admin Panel",
-    path: "/admin/users",
+    path: "/admin",
     isActualPage: computed(() => routePath.value.startsWith("/admin")),
     showWhenAdmin: true,
   },
