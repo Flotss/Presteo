@@ -39,7 +39,7 @@
             class="flex flex-row w-full gap-6 items-stretch no-underline"
           >
             <div
-              class="flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-2xl overflow-hidden min-w-[140px] min-h-[100px] md:min-w-[220px] md:min-h-[150px] max-w-[220px] max-h-[150px] border border-gray-200"
+              class="flex-shrink-0 items-center justify-center bg-gray-100 rounded-2xl overflow-hidden min-w-[140px] min-h-[100px] md:min-w-[220px] md:min-h-[150px] max-w-[220px] max-h-[150px] border border-gray-200 hidden md:flex"
             >
               <img
                 v-if="service.imageUrl"
